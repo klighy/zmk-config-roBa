@@ -127,9 +127,9 @@
 
         FUNCTION {
             bindings = <
-&trans        &kp NUMBER_7  &kp NUMBER_8  &kp NUMBER_9  &trans                               &kp KP_EQUAL  &kp LEFT_PARENTHESIS  &kp RIGHT_PARENTHESIS  &kp F4         &kp F5
+&trans        &kp NUMBER_7  &kp NUMBER_8  &kp NUMBER_9  &trans                               &kp KP_EQUAL  &kp LEFT_PARENTHESIS  &kp RIGHT_PARENTHESIS  &trans         &trans
 &trans        &kp NUMBER_4  &kp NUMBER_5  &kp NUMBER_6  &trans  &trans         &kp SLASH     &kp ASTERISK  &kp LEFT_BRACE        &kp RIGHT_BRACE        &kp LESS_THAN  &kp GREATER_THAN
-&kp NUMBER_0  &kp NUMBER_1  &kp NUMBER_2  &kp NUMBER_3  &trans  &kp ENTER      &kp KP_MINUS  &kp KP_PLUS   &kp LEFT_BRACKET      &kp RIGHT_BRACKET      &trans         &kp F11
+&kp NUMBER_0  &kp NUMBER_1  &kp NUMBER_2  &kp NUMBER_3  &trans  &kp ENTER      &kp KP_MINUS  &kp KP_PLUS   &kp LEFT_BRACKET      &kp RIGHT_BRACKET      &trans         &trans
 &kp LANG2     &trans        &trans        &trans        &trans  &trans         &trans        &lt 5 A                                                                   &kp LANG1
             >;
         };
@@ -158,7 +158,7 @@
             bindings = <
 &trans  &trans  &trans  &trans  &trans                      &trans  &trans    &trans    &trans    &trans
 &trans  &trans  &trans  &trans  &trans  &trans      &trans  &trans  &mkp MB1  &mkp MB3  &mkp MB2  &trans
-&trans  &trans  &trans  &trans  &trans  &trans      &trans  &trans  &trans    &trans    &trans    &trans
+&trans  &trans  &trans  &trans  &trans  &trans      &trans  &trans  &mkp MB5  &trans    &mkp MB4  &trans
 &trans  &trans  &trans  &trans  &trans  &trans      &trans  &trans                                &trans
             >;
         };
