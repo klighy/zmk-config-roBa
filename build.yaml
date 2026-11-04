@@ -28,4 +28,9 @@ include:
  - board: seeeduino_xiao_ble
    shield: roBa_L
  - board: seeeduino_xiao_ble
+   shield: roBa_L
+   snippet: zmk-usb-logging
+   cmake-args: -DCONFIG_ZMK_SPLIT_ROLE_CENTRAL=y -DCONFIG_SENSOR_LOG_LEVEL_DBG=y
+   artifact-name: roBa_L_encoder_gpio_debug
+ - board: seeeduino_xiao_ble
    shield: settings_reset
