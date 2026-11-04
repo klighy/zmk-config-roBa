@@ -22,6 +22,10 @@ include:
    shield: roBa_R
    snippet: studio-rpc-usb-uart
  - board: seeeduino_xiao_ble
+   shield: roBa_R
+   snippet: zmk-usb-logging
+   artifact-name: roBa_R_encoder_debug
+ - board: seeeduino_xiao_ble
    shield: roBa_L
  - board: seeeduino_xiao_ble
    shield: settings_reset
