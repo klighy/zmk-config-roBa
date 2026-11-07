@@ -68,7 +68,9 @@
         encoder_scroll: encoder_scroll {
             compatible = "zmk,behavior-sensor-rotate";
             #sensor-binding-cells = <0>;
+
             // Emit one wheel step at the default 16 ms scroll interval.
+
             tap-ms = <24>;
             bindings = <&msc MOVE_Y(-64)>, <&msc MOVE_Y(64)>;
         };
@@ -117,6 +119,15 @@
             #binding-cells = <0>;
             mods = <(MOD_LSFT)>;
         };
+
+        sb: sb {
+            compatible = "zmk,behavior-mod-morph";
+            label = "SB";
+            bindings = <&kp SPACE>, <&kp BACKSPACE>;
+
+            #binding-cells = <0>;
+            mods = <(MOD_LSFT)>;
+        };
     };
 
     keymap {
@@ -124,10 +135,10 @@
 
         default_layer {
             bindings = <
-&kp Q            &kp W         &kp E         &kp R                       &kp T                                                      &kp Y        &kp U  &kp I  &kp O  &kp P
-&kp A            &kp S         &kp D         &kp F                       &kp G           &kp LS(LG(S))               &te            &kp H        &kp J  &kp K  &kp L  &kp SINGLE_QUOTE
-&kp Z            &kp X         &kp C         &kp V                       &kp B           &kp TAB                     &pm            &kp N        &kp M  &sc    &sp    &kp SLASH
-&mt LCTRL LANG2  &kp LEFT_WIN  &kp LEFT_ALT  &lt_to_layer_0 (1) LC(TAB)  &kp LEFT_SHIFT  &lt_to_layer_0 3 SPACE      &kp BACKSPACE  &lt 2 ENTER                       &kp LANG1
+&kp Q            &kp W         &kp E         &kp R                       &kp T                                            &kp Y        &kp U  &kp I  &kp O  &kp P
+&kp A            &kp S         &kp D         &kp F                       &kp G           &none                       &te  &kp H        &kp J  &kp K  &kp L  &kp SINGLE_QUOTE
+&kp Z            &kp X         &kp C         &kp V                       &kp B           &kp TAB                     &pm  &kp N        &kp M  &sc    &sp    &kp SLASH
+&mt LCTRL LANG2  &kp LEFT_WIN  &kp LEFT_ALT  &lt_to_layer_0 (1) LC(TAB)  &kp LEFT_SHIFT  &lt_to_layer_0 3 SPACE      &sb  &lt 1 ENTER                       &kp LANG1
             >;
 
             sensor-bindings = <&encoder_scroll>;
@@ -135,10 +146,10 @@
 
         FUNCTION {
             bindings = <
-&trans        &kp NUMBER_7  &kp NUMBER_8  &kp NUMBER_9  &trans                               &kp KP_EQUAL  &kp LEFT_PARENTHESIS  &kp RIGHT_PARENTHESIS  &trans         &trans
-&trans        &kp NUMBER_4  &kp NUMBER_5  &kp NUMBER_6  &trans  &trans         &kp SLASH     &kp ASTERISK  &kp LEFT_BRACE        &kp RIGHT_BRACE        &kp LESS_THAN  &kp GREATER_THAN
-&kp NUMBER_0  &kp NUMBER_1  &kp NUMBER_2  &kp NUMBER_3  &trans  &kp ENTER      &kp KP_MINUS  &kp KP_PLUS   &kp LEFT_BRACKET      &kp RIGHT_BRACKET      &trans         &trans
-&kp LANG2     &trans        &trans        &trans        &trans  &trans         &trans        &lt 5 A                                                                   &kp LANG1
+&trans     &kp NUMBER_7  &kp NUMBER_8  &kp NUMBER_9  &trans                               &kp KP_EQUAL  &kp LEFT_PARENTHESIS  &kp RIGHT_PARENTHESIS  &trans         &trans
+&trans     &kp NUMBER_4  &kp NUMBER_5  &kp NUMBER_6  &trans  &trans         &kp SLASH     &kp ASTERISK  &kp LEFT_BRACE        &kp RIGHT_BRACE        &kp LESS_THAN  &kp GREATER_THAN
+&trans     &kp NUMBER_1  &kp NUMBER_2  &kp NUMBER_3  &trans  &kp ENTER      &kp KP_MINUS  &kp KP_PLUS   &kp LEFT_BRACKET      &kp RIGHT_BRACKET      &trans         &trans
+&kp LANG2  &kp N0        &trans        &trans        &trans  &trans         &trans        &lt 2 ENTER                                                               &kp LANG1
             >;
         };
 
