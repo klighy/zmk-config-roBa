@@ -146,10 +146,10 @@
 
         FUNCTION {
             bindings = <
-&trans     &kp NUMBER_7  &kp NUMBER_8  &kp NUMBER_9  &trans                               &kp KP_EQUAL  &kp LEFT_PARENTHESIS  &kp RIGHT_PARENTHESIS  &trans         &trans
-&trans     &kp NUMBER_4  &kp NUMBER_5  &kp NUMBER_6  &trans  &trans         &kp SLASH     &kp ASTERISK  &kp LEFT_BRACE        &kp RIGHT_BRACE        &kp LESS_THAN  &kp GREATER_THAN
-&trans     &kp NUMBER_1  &kp NUMBER_2  &kp NUMBER_3  &trans  &kp ENTER      &kp KP_MINUS  &kp KP_PLUS   &kp LEFT_BRACKET      &kp RIGHT_BRACKET      &trans         &trans
-&kp LANG2  &kp N0        &trans        &trans        &trans  &trans         &trans        &lt 2 ENTER                                                               &kp LANG1
+&trans     &kp NUMBER_7  &kp NUMBER_8  &kp NUMBER_9  &trans                            &kp KP_EQUAL  &kp LEFT_PARENTHESIS  &kp RIGHT_PARENTHESIS  &trans         &trans
+&trans     &kp NUMBER_4  &kp NUMBER_5  &kp NUMBER_6  &trans  &trans      &kp SLASH     &kp ASTERISK  &kp LEFT_BRACE        &kp RIGHT_BRACE        &kp LESS_THAN  &kp GREATER_THAN
+&trans     &kp NUMBER_1  &kp NUMBER_2  &kp NUMBER_3  &trans  &trans      &kp KP_MINUS  &kp KP_PLUS   &kp LEFT_BRACKET      &kp RIGHT_BRACKET      &trans         &trans
+&kp LANG2  &kp N0        &trans        &trans        &trans  &trans      &trans        &trans                                                                    &kp LANG1
             >;
         };
 
@@ -182,10 +182,10 @@
 
         SCROLL {
             bindings = <
-&trans  &kp F9  &kp F10  &kp F11  &kp F12                      &trans  &trans  &trans  &trans  &trans
-&trans  &kp F5  &kp F6   &kp F7   &kp F8   &trans      &trans  &trans  &trans  &trans  &trans  &trans
-&trans  &kp F1  &kp F2   &kp F3   &kp F4   &trans      &trans  &trans  &trans  &trans  &trans  &trans
-&trans  &trans  &trans   &trans   &trans   &trans      &trans  &trans                          &trans
+&trans  &trans  &trans  &trans  &trans                      &trans  &trans  &trans  &trans  &trans
+&trans  &trans  &trans  &trans  &trans  &trans      &trans  &trans  &trans  &trans  &trans  &trans
+&trans  &trans  &trans  &trans  &trans  &trans      &trans  &trans  &trans  &trans  &trans  &trans
+&trans  &trans  &trans  &trans  &trans  &trans      &trans  &trans                          &trans
             >;
         };
 
