@@ -138,7 +138,7 @@
 &kp Q            &kp W         &kp E         &kp R                       &kp T                                &kp Y             &kp U  &kp I  &kp O  &kp P
 &kp A            &kp S         &kp D         &kp F                       &kp G  &none            &te          &kp H             &kp J  &kp K  &kp L  &kp SINGLE_QUOTE
 &kp Z            &kp X         &kp C         &kp V                       &kp B  &kp TAB          &pm          &kp N             &kp M  &sc    &sp    &kp SLASH
-&mt LCTRL LANG2  &kp LEFT_WIN  &kp LEFT_ALT  &lt_to_layer_0 (1) LC(TAB)  &sb    &lt 3 ENTER      &lt 1 LANG2  &mt LSHIFT LANG1                       &kp LANG1
+&mt LCTRL LANG2  &kp LEFT_WIN  &kp LEFT_ALT  &lt_to_layer_0 (2) LC(TAB)  &sb    &lt 3 ENTER      &lt 1 LANG2  &mt LSHIFT LANG1                       &kp LANG1
             >;
 
             sensor-bindings = <&encoder_scroll>;
