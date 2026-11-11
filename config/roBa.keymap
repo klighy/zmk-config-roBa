@@ -84,15 +84,6 @@
             tapping-term-ms = <200>;
         };
 
-        pm: pm {
-            compatible = "zmk,behavior-mod-morph";
-            label = "PM";
-            bindings = <&kp MINUS>, <&kp PLUS>;
-
-            #binding-cells = <0>;
-            mods = <(MOD_LSFT)>;
-        };
-
         te: te {
             compatible = "zmk,behavior-mod-morph";
             label = "TE";
@@ -129,19 +120,28 @@
             mods = <(MOD_LSFT)>;
         };
 
-        SBlash: SBlash {
+        qe: qe {
             compatible = "zmk,behavior-mod-morph";
-            label = "SBLASH";
-            bindings = <&kp SLASH>, <&kp BACKSLASH>;
+            label = "QE";
+            bindings = <&kp QUESTION>, <&kp EXCLAMATION>;
 
             #binding-cells = <0>;
             mods = <(MOD_LSFT)>;
         };
 
-        qe: qe {
+        line: line {
             compatible = "zmk,behavior-mod-morph";
-            label = "QE";
-            bindings = <&kp QUESTION>, <&kp EXCLAMATION>;
+            label = "LINE";
+            bindings = <&kp KP_MINUS>, <&kp PIPE>;
+
+            #binding-cells = <0>;
+            mods = <(MOD_LSFT)>;
+        };
+
+        SBlash: SBlash {
+            compatible = "zmk,behavior-mod-morph";
+            label = "SBLASH";
+            bindings = <&kp KP_SLASH>, <&kp BACKSLASH>;
 
             #binding-cells = <0>;
             mods = <(MOD_LSFT)>;
@@ -153,10 +153,10 @@
 
         default_layer {
             bindings = <
-&kp Q            &kp W         &kp E         &kp R                       &kp T                                    &kp Y             &kp U  &kp I  &kp O  &kp P
-&kp A            &kp S         &kp D         &kp F                       &kp G        &none          &te          &kp H             &kp J  &kp K  &kp L  &kp SINGLE_QUOTE
-&kp Z            &kp X         &kp C         &kp V                       &kp B        &kp TILDE      &qe          &kp N             &kp M  &sc    &sp    &SBlash
-&mt LCTRL LANG2  &kp LEFT_WIN  &kp LEFT_ALT  &lt_to_layer_0 (2) LC(TAB)  &lt 3 ENTER  &sb            &lt 1 LANG2  &mt LSHIFT LANG1                       &kp LANG1
+&kp Q            &kp W         &kp E         &kp R                 &kp T                                    &kp Y             &kp U  &kp I  &kp O  &kp P
+&kp A            &kp S         &kp D         &kp F                 &kp G        &none          &te          &kp H             &kp J  &kp K  &kp L  &kp SINGLE_QUOTE
+&kp Z            &kp X         &kp C         &kp V                 &kp B        &kp GRAVE      &line        &kp N             &kp M  &sc    &sp    &SBlash
+&mt LCTRL LANG2  &kp LEFT_WIN  &kp LEFT_ALT  &lt_to_layer_0 2 TAB  &lt 3 ENTER  &sb            &lt 1 LANG2  &mt LSHIFT LANG1                       &qe
             >;
 
             sensor-bindings = <&encoder_scroll>;
