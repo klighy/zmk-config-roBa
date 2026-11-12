@@ -69,10 +69,9 @@
             compatible = "zmk,behavior-sensor-rotate";
             #sensor-binding-cells = <0>;
 
-            // Emit one wheel step at the default 16 ms scroll interval.
-
+            // Emit 16 high-resolution units (one wheel step) per 16 ms tick.
             tap-ms = <24>;
-            bindings = <&msc MOVE_Y(-64)>, <&msc MOVE_Y(64)>;
+            bindings = <&msc MOVE_Y(-1024)>, <&msc MOVE_Y(1024)>;
         };
 
         lt_to_layer_0: lt_to_layer_0 {

@@ -1,0 +1,51 @@
+--- a/src/pointing/input_listener.c
++++ b/src/pointing/input_listener.c
+@@ -240,26 +240,31 @@
+
+ #if IS_ENABLED(CONFIG_ZMK_POINTING_SMOOTH_SCROLLING)
+ static void apply_resolution_scaling(struct input_listener_data *data, struct input_event *evt) {
++    if (evt->type != INPUT_EV_REL) {
++        return;
++    }
++
+     int16_t *remainder;
+-    uint8_t div;
++    uint8_t resolution;
+
+     switch (evt->code) {
+     case INPUT_REL_WHEEL:
+         remainder = &data->wheel_remainder;
+-        div = (16 - zmk_pointing_resolution_multipliers_get_current_profile().wheel);
++        resolution = zmk_pointing_resolution_multipliers_get_current_profile().wheel;
+         break;
+     case INPUT_REL_HWHEEL:
+         remainder = &data->h_wheel_remainder;
+-        div = (16 - zmk_pointing_resolution_multipliers_get_current_profile().hor_wheel);
++        resolution = zmk_pointing_resolution_multipliers_get_current_profile().hor_wheel;
+         break;
+     default:
+         return;
+     }
+
+-    int16_t val = evt->value + *remainder;
+-    int16_t scaled = val / (int16_t)div;
+-    *remainder = val - (scaled * (int16_t)div);
+-    evt->value = val;
++    // The HID descriptor maps logical 0..15 to physical multipliers 1..16.
++    // Listener inputs are in sixteenths of a detent, independent of the active multiplier.
++    int64_t units = (int64_t)evt->value * (resolution + 1) + *remainder;
++    evt->value = units / 16;
++    *remainder = units % 16;
+ }
+ #endif // IS_ENABLED(CONFIG_ZMK_POINTING_SMOOTH_SCROLLING)
+
+--- a/src/usb_hid.c
++++ b/src/usb_hid.c
+@@ -77,6 +77,7 @@
+             struct zmk_pointing_resolution_multipliers mult =
+                 zmk_pointing_resolution_multipliers_get_profile(endpoint);
+
++            res_feature_report.report_id = ZMK_HID_REPORT_ID_MOUSE;
+             res_feature_report.body.wheel_res = mult.wheel;
+             res_feature_report.body.hwheel_res = mult.hor_wheel;
+             *data = (uint8_t *)&res_feature_report;
