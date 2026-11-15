@@ -34,11 +34,6 @@
             key-positions = <11 12>;
         };
 
-        shift_tab {
-            bindings = <&kp LS(TAB)>;
-            key-positions = <12 13>;
-        };
-
         muhennkann {
             bindings = <&to_layer_0 INT_MUHENKAN>;
             key-positions = <11 10>;
@@ -57,6 +52,16 @@
         esc {
             bindings = <&kp ESC>;
             key-positions = <1 2>;
+        };
+
+        IMEoff {
+            bindings = <&kp LANG2>;
+            key-positions = <12 13>;
+        };
+
+        IMEon {
+            bindings = <&kp LANG1>;
+            key-positions = <18 19>;
         };
     };
 
