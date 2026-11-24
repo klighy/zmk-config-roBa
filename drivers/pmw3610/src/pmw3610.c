@@ -599,8 +599,8 @@ static enum pixart_input_mode get_input_mode_for_current_layer(const struct devi
 
 static void pmw3610_report_scroll(const struct device *dev, uint16_t code, int16_t delta,
                                   int8_t *remainder) {
-    // Use 64 sensor counts per detent with ZMK's 16 input units per detent.
-    const int32_t counts_per_unit = 4;
+    // Use 128 sensor counts per detent with ZMK's 16 input units per detent.
+    const int32_t counts_per_unit = 8;
     int32_t counts = delta + *remainder;
     int32_t scroll = counts / counts_per_unit;
     *remainder = counts % counts_per_unit;
