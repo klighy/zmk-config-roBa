@@ -166,6 +166,7 @@
         compatible = "zmk,keymap";
 
         default_win {
+            display-name = "WIN";
             bindings = <
 &kp Q      &kp W         &kp E         &kp R        &kp T                                                 &kp Y        &kp U  &kp I  &kp O  &kp P
 &kp A      &kp S         &kp D         &kp F        &kp G        &none                     &kp EQUAL      &kp H        &kp J  &kp K  &kp L  &kp SINGLE_QUOTE
@@ -177,6 +178,7 @@
         };
 
         dafault_mac {
+            display-name = "MAC";
             bindings = <
 &trans            &trans     &trans  &trans  &trans                      &trans  &trans  &trans  &trans  &trans
 &trans            &trans     &trans  &trans  &trans  &trans      &trans  &trans  &trans  &trans  &trans  &trans
@@ -186,6 +188,7 @@
         };
 
         CAL {
+            display-name = "CAL";
             bindings = <
 &trans        &kp NUMBER_7  &kp NUMBER_8  &kp NUMBER_9  &trans                                  &kp KP_EQUAL  &kp LEFT_PARENTHESIS  &kp RIGHT_PARENTHESIS  &kp UNDER      &trans
 &kp KP_SLASH  &kp NUMBER_4  &kp NUMBER_5  &kp NUMBER_6  &kp KP_MINUS  &trans      &kp SLASH     &kp ASTERISK  &kp LEFT_BRACE        &kp RIGHT_BRACE        &kp LESS_THAN  &kp GREATER_THAN
@@ -195,6 +198,7 @@
         };
 
         NUM {
+            display-name = "NUM";
             bindings = <
 &kp MINUS  &kp KP_NUMBER_7  &kp KP_NUMBER_8  &kp KP_NUMBER_9  &kp PLUS                                                   &kp CARET         &kp AMPERSAND      &kp TILDE       &kp LEFT_PARENTHESIS  &kp RIGHT_PARENTHESIS
 &kp SLASH  &kp KP_NUMBER_4  &kp KP_NUMBER_5  &kp KP_NUMBER_6  &kp ASTERISK  &kp LC(LA(KP_NUMBER_0))      &kp UNDERSCORE  &kp EXCLAMATION   &kp AT_SIGN        &kp HASH        &kp DOLLAR            &kp PERCENT
@@ -204,6 +208,7 @@
         };
 
         ARROW {
+            display-name = "ARROW";
             bindings = <
 &kp ESCAPE      &kp LC(LS(TAB))         &kp UP_ARROW    &kp LC(TAB)              &trans                       &trans  &trans  &trans  &trans  &trans
 &kp HOME        &kp LEFT_ARROW          &kp DOWN_ARROW  &kp RIGHT_ARROW          &kp END  &trans      &trans  &trans  &trans  &trans  &trans  &trans
@@ -213,6 +218,7 @@
         };
 
         MOUSE {
+            display-name = "MOUSE";
             bindings = <
 &trans           &trans  &trans  &trans  &trans                      &trans  &trans    &trans    &trans    &trans
 &trans           &trans  &trans  &trans  &trans  &trans      &trans  &trans  &mkp MB1  &mkp MB3  &mkp MB2  &mo LAYER_SCROLL
@@ -222,6 +228,7 @@
         };
 
         SCROLL {
+            display-name = "SCROLL";
             bindings = <
 &trans  &trans  &trans  &trans  &trans                      &trans  &trans  &trans  &trans  &trans
 &trans  &trans  &trans  &trans  &trans  &trans      &trans  &trans  &trans  &trans  &trans  &trans
@@ -231,6 +238,7 @@
         };
 
         setting {
+            display-name = "SETTING";
             bindings = <
 &trans  &trans        &trans        &trans        &trans                           &bt BT_SEL 0    &bt BT_SEL 1  &bt BT_SEL 2  &bt BT_SEL 3  &bt BT_SEL 4
 &trans  &trans        &trans        &trans        &trans  &trans      &trans       &trans          &trans        &trans        &trans        &trans
