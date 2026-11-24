@@ -1,0 +1,2288 @@
+--- a/include/zmk/hid.h
++++ b/include/zmk/hid.h
+@@ -76,317 +76,348 @@
+ #define ZMK_HID_REPORT_ID_LEDS 0x01
+ #define ZMK_HID_REPORT_ID_CONSUMER 0x02
+ #define ZMK_HID_REPORT_ID_MOUSE 0x03
+-
+-#ifndef HID_ITEM_TAG_PUSH
+-#define HID_ITEM_TAG_PUSH 0xA
+-#endif
+-
+-#ifndef HID_ITEM_TAG_POP
+-#define HID_ITEM_TAG_POP 0xB
+-#endif
+-
+-#define HID_PUSH HID_ITEM(HID_ITEM_TAG_PUSH, HID_ITEM_TYPE_GLOBAL, 0)
+-
+-#define HID_POP HID_ITEM(HID_ITEM_TAG_POP, HID_ITEM_TYPE_GLOBAL, 0)
+-
+-#ifndef HID_PHYSICAL_MIN8
+-#define HID_PHYSICAL_MIN8(a) HID_ITEM(HID_ITEM_TAG_PHYSICAL_MIN, HID_ITEM_TYPE_GLOBAL, 1), a
+-#endif
+-
+-#ifndef HID_PHYSICAL_MAX8
+-#define HID_PHYSICAL_MAX8(a) HID_ITEM(HID_ITEM_TAG_PHYSICAL_MAX, HID_ITEM_TYPE_GLOBAL, 1), a
+-#endif
+-
+-#define HID_USAGE16(a, b) HID_ITEM(HID_ITEM_TAG_USAGE, HID_ITEM_TYPE_LOCAL, 2), a, b
+-
+-#define HID_USAGE16_SINGLE(a) HID_USAGE16((a & 0xFF), ((a >> 8) & 0xFF))
+-
+-static const uint8_t zmk_hid_report_desc[] = {
+-    HID_USAGE_PAGE(HID_USAGE_GEN_DESKTOP),
+-    HID_USAGE(HID_USAGE_GD_KEYBOARD),
+-    HID_COLLECTION(HID_COLLECTION_APPLICATION),
+-    HID_REPORT_ID(ZMK_HID_REPORT_ID_KEYBOARD),
+-    HID_USAGE_PAGE(HID_USAGE_KEY),
+-    HID_USAGE_MIN8(HID_USAGE_KEY_KEYBOARD_LEFTCONTROL),
+-    HID_USAGE_MAX8(HID_USAGE_KEY_KEYBOARD_RIGHT_GUI),
+-    HID_LOGICAL_MIN8(0x00),
+-    HID_LOGICAL_MAX8(0x01),
+-
+-    HID_REPORT_SIZE(0x01),
+-    HID_REPORT_COUNT(0x08),
+-    HID_INPUT(ZMK_HID_MAIN_VAL_DATA | ZMK_HID_MAIN_VAL_VAR | ZMK_HID_MAIN_VAL_ABS),
+-
+-    HID_USAGE_PAGE(HID_USAGE_KEY),
+-    HID_REPORT_SIZE(0x08),
+-    HID_REPORT_COUNT(0x01),
+-    HID_INPUT(ZMK_HID_MAIN_VAL_CONST | ZMK_HID_MAIN_VAL_VAR | ZMK_HID_MAIN_VAL_ABS),
+-
+-#if IS_ENABLED(CONFIG_ZMK_HID_INDICATORS)
+-
+-    HID_USAGE_PAGE(HID_USAGE_LED),
+-    HID_USAGE_MIN8(HID_USAGE_LED_NUM_LOCK),
+-    HID_USAGE_MAX8(HID_USAGE_LED_KANA),
+-    HID_REPORT_SIZE(0x01),
+-    HID_REPORT_COUNT(0x05),
+-    HID_OUTPUT(ZMK_HID_MAIN_VAL_DATA | ZMK_HID_MAIN_VAL_VAR | ZMK_HID_MAIN_VAL_ABS),
+-
+-    HID_USAGE_PAGE(HID_USAGE_LED),
+-    HID_REPORT_SIZE(0x03),
+-    HID_REPORT_COUNT(0x01),
+-    HID_OUTPUT(ZMK_HID_MAIN_VAL_CONST | ZMK_HID_MAIN_VAL_VAR | ZMK_HID_MAIN_VAL_ABS),
+-
+-#endif // IS_ENABLED(CONFIG_ZMK_HID_INDICATORS)
+-
+-    HID_USAGE_PAGE(HID_USAGE_KEY),
+-
+-#if IS_ENABLED(CONFIG_ZMK_HID_REPORT_TYPE_NKRO)
+-    HID_LOGICAL_MIN8(0x00),
+-    HID_LOGICAL_MAX8(0x01),
+-    HID_USAGE_MIN8(0x00),
+-    HID_USAGE_MAX8(ZMK_HID_KEYBOARD_NKRO_MAX_USAGE),
+-    HID_REPORT_SIZE(0x01),
+-    HID_REPORT_COUNT(ZMK_HID_KEYBOARD_NKRO_MAX_USAGE + 1),
+-    HID_INPUT(ZMK_HID_MAIN_VAL_DATA | ZMK_HID_MAIN_VAL_VAR | ZMK_HID_MAIN_VAL_ABS),
+-#elif IS_ENABLED(CONFIG_ZMK_HID_REPORT_TYPE_HKRO)
+-    HID_LOGICAL_MIN8(0x00),
+-    HID_LOGICAL_MAX16(0xFF, 0x00),
+-    HID_USAGE_MIN8(0x00),
+-    HID_USAGE_MAX8(0xFF),
+-    HID_REPORT_SIZE(0x08),
+-    HID_REPORT_COUNT(CONFIG_ZMK_HID_KEYBOARD_REPORT_SIZE),
+-    HID_INPUT(ZMK_HID_MAIN_VAL_DATA | ZMK_HID_MAIN_VAL_ARRAY | ZMK_HID_MAIN_VAL_ABS),
+-#else
+-#error "A proper HID report type must be selected"
+-#endif
+-
+-    HID_END_COLLECTION,
+-    HID_USAGE_PAGE(HID_USAGE_CONSUMER),
+-    HID_USAGE(HID_USAGE_CONSUMER_CONSUMER_CONTROL),
+-    HID_COLLECTION(HID_COLLECTION_APPLICATION),
+-    HID_REPORT_ID(ZMK_HID_REPORT_ID_CONSUMER),
+-    HID_USAGE_PAGE(HID_USAGE_CONSUMER),
+-
+-#if IS_ENABLED(CONFIG_ZMK_HID_CONSUMER_REPORT_USAGES_BASIC)
+-    HID_LOGICAL_MIN8(0x00),
+-    HID_LOGICAL_MAX16(0xFF, 0x00),
+-    HID_USAGE_MIN8(0x00),
+-    HID_USAGE_MAX8(0xFF),
+-    HID_REPORT_SIZE(0x08),
+-#elif IS_ENABLED(CONFIG_ZMK_HID_CONSUMER_REPORT_USAGES_FULL)
+-    HID_LOGICAL_MIN8(0x00),
+-    HID_LOGICAL_MAX16(0xFF, 0x0F),
+-    HID_USAGE_MIN8(0x00),
+-    HID_USAGE_MAX16(0xFF, 0x0F),
+-    HID_REPORT_SIZE(0x10),
+-#else
+-#error "A proper consumer HID report usage range must be selected"
+-#endif
+-    HID_REPORT_COUNT(CONFIG_ZMK_HID_CONSUMER_REPORT_SIZE),
+-    HID_INPUT(ZMK_HID_MAIN_VAL_DATA | ZMK_HID_MAIN_VAL_ARRAY | ZMK_HID_MAIN_VAL_ABS),
+-    HID_END_COLLECTION,
+-
+-#if IS_ENABLED(CONFIG_ZMK_POINTING)
+-    HID_USAGE_PAGE(HID_USAGE_GD),
+-    HID_USAGE(HID_USAGE_GD_MOUSE),
+-    HID_COLLECTION(HID_COLLECTION_APPLICATION),
+-    HID_REPORT_ID(ZMK_HID_REPORT_ID_MOUSE),
+-    HID_USAGE(HID_USAGE_GD_POINTER),
+-    HID_COLLECTION(HID_COLLECTION_PHYSICAL),
+-    HID_USAGE_PAGE(HID_USAGE_BUTTON),
+-    HID_USAGE_MIN8(0x1),
+-    HID_USAGE_MAX8(ZMK_HID_MOUSE_NUM_BUTTONS),
+-    HID_LOGICAL_MIN8(0x00),
+-    HID_LOGICAL_MAX8(0x01),
+-    HID_REPORT_SIZE(0x01),
+-    HID_REPORT_COUNT(0x5),
+-    HID_INPUT(ZMK_HID_MAIN_VAL_DATA | ZMK_HID_MAIN_VAL_VAR | ZMK_HID_MAIN_VAL_ABS),
+-    // Constant padding for the last 3 bits.
+-    HID_REPORT_SIZE(0x03),
+-    HID_REPORT_COUNT(0x01),
+-    HID_INPUT(ZMK_HID_MAIN_VAL_CONST | ZMK_HID_MAIN_VAL_VAR | ZMK_HID_MAIN_VAL_ABS),
+-    // Some OSes ignore pointer devices without X/Y data.
+-    HID_USAGE_PAGE(HID_USAGE_GEN_DESKTOP),
+-    HID_USAGE(HID_USAGE_GD_X),
+-    HID_USAGE(HID_USAGE_GD_Y),
+-    HID_LOGICAL_MIN16(0x00, 0x80),
+-    HID_LOGICAL_MAX16(0xFF, 0x7F),
+-    HID_REPORT_SIZE(0x10),
+-    HID_REPORT_COUNT(0x02),
+-    HID_INPUT(ZMK_HID_MAIN_VAL_DATA | ZMK_HID_MAIN_VAL_VAR | ZMK_HID_MAIN_VAL_REL),
+-    HID_COLLECTION(HID_COLLECTION_LOGICAL),
+-#if IS_ENABLED(CONFIG_ZMK_POINTING_SMOOTH_SCROLLING)
+-    HID_USAGE(HID_USAGE_GD_RESOLUTION_MULTIPLIER),
+-    HID_LOGICAL_MIN8(0x00),
+-    HID_LOGICAL_MAX8(0x0F),
+-    HID_PHYSICAL_MIN8(0x01),
+-    HID_PHYSICAL_MAX8(0x10),
+-    HID_REPORT_SIZE(0x04),
+-    HID_REPORT_COUNT(0x01),
+-    HID_PUSH,
+-    HID_FEATURE(ZMK_HID_MAIN_VAL_DATA | ZMK_HID_MAIN_VAL_VAR | ZMK_HID_MAIN_VAL_ABS),
+-#endif // IS_ENABLED(CONFIG_ZMK_POINTING_SMOOTH_SCROLLING)
+-    HID_USAGE(HID_USAGE_GD_WHEEL),
+-    HID_LOGICAL_MIN16(0x00, 0x80),
+-    HID_LOGICAL_MAX16(0xFF, 0x7F),
+-    HID_PHYSICAL_MIN8(0x00),
+-    HID_PHYSICAL_MAX8(0x00),
+-    HID_REPORT_SIZE(0x10),
+-    HID_REPORT_COUNT(0x01),
+-    HID_INPUT(ZMK_HID_MAIN_VAL_DATA | ZMK_HID_MAIN_VAL_VAR | ZMK_HID_MAIN_VAL_REL),
+-    HID_END_COLLECTION,
+-    HID_COLLECTION(HID_COLLECTION_LOGICAL),
+-#if IS_ENABLED(CONFIG_ZMK_POINTING_SMOOTH_SCROLLING)
+-    HID_USAGE(HID_USAGE_GD_RESOLUTION_MULTIPLIER),
+-    HID_POP,
+-    HID_FEATURE(ZMK_HID_MAIN_VAL_DATA | ZMK_HID_MAIN_VAL_VAR | ZMK_HID_MAIN_VAL_ABS),
+-#endif // IS_ENABLED(CONFIG_ZMK_POINTING_SMOOTH_SCROLLING)
+-    HID_USAGE_PAGE(HID_USAGE_CONSUMER),
+-    HID_USAGE16_SINGLE(HID_USAGE_CONSUMER_AC_PAN),
+-    HID_LOGICAL_MIN16(0x00, 0x80),
+-    HID_LOGICAL_MAX16(0xFF, 0x7F),
+-    HID_PHYSICAL_MIN8(0x00),
+-    HID_PHYSICAL_MAX8(0x00),
+-    HID_REPORT_SIZE(0x10),
+-    HID_REPORT_COUNT(0x01),
+-    HID_INPUT(ZMK_HID_MAIN_VAL_DATA | ZMK_HID_MAIN_VAL_VAR | ZMK_HID_MAIN_VAL_REL),
+-    HID_END_COLLECTION,
+-    HID_END_COLLECTION,
+-    HID_END_COLLECTION,
+-#endif // IS_ENABLED(CONFIG_ZMK_POINTING)
+-};
+-
+-#if IS_ENABLED(CONFIG_ZMK_USB_BOOT)
+-
+-#define HID_ERROR_ROLLOVER 0x1
+-#define HID_BOOT_KEY_LEN 6
+-
+-#if IS_ENABLED(CONFIG_ZMK_HID_REPORT_TYPE_HKRO) &&                                                 \
+-    CONFIG_ZMK_HID_KEYBOARD_REPORT_SIZE == HID_BOOT_KEY_LEN
+-typedef struct zmk_hid_keyboard_report_body zmk_hid_boot_report_t;
+-#else
+-struct zmk_hid_boot_report {
+-    zmk_mod_flags_t modifiers;
+-    uint8_t _reserved;
+-    uint8_t keys[HID_BOOT_KEY_LEN];
+-} __packed;
+-
+-typedef struct zmk_hid_boot_report zmk_hid_boot_report_t;
+-#endif
+-#endif
+-
+-struct zmk_hid_keyboard_report_body {
+-    zmk_mod_flags_t modifiers;
+-    uint8_t _reserved;
+-#if IS_ENABLED(CONFIG_ZMK_HID_REPORT_TYPE_NKRO)
+-    uint8_t keys[DIV_ROUND_UP(ZMK_HID_KEYBOARD_NKRO_MAX_USAGE + 1, 8)];
+-#elif IS_ENABLED(CONFIG_ZMK_HID_REPORT_TYPE_HKRO)
+-    uint8_t keys[CONFIG_ZMK_HID_KEYBOARD_REPORT_SIZE];
+-#endif
+-} __packed;
+-
+-struct zmk_hid_keyboard_report {
+-    uint8_t report_id;
+-    struct zmk_hid_keyboard_report_body body;
+-} __packed;
+-
+-struct zmk_hid_led_report_body {
+-    uint8_t leds;
+-} __packed;
+-
+-struct zmk_hid_led_report {
+-    uint8_t report_id;
+-    struct zmk_hid_led_report_body body;
+-} __packed;
+-
+-struct zmk_hid_consumer_report_body {
+-#if IS_ENABLED(CONFIG_ZMK_HID_CONSUMER_REPORT_USAGES_BASIC)
+-    uint8_t keys[CONFIG_ZMK_HID_CONSUMER_REPORT_SIZE];
+-#elif IS_ENABLED(CONFIG_ZMK_HID_CONSUMER_REPORT_USAGES_FULL)
+-    uint16_t keys[CONFIG_ZMK_HID_CONSUMER_REPORT_SIZE];
+-#endif
+-} __packed;
+-
+-struct zmk_hid_consumer_report {
+-    uint8_t report_id;
+-    struct zmk_hid_consumer_report_body body;
+-} __packed;
+-
+-#if IS_ENABLED(CONFIG_ZMK_POINTING)
+-struct zmk_hid_mouse_report_body {
+-    zmk_mouse_button_flags_t buttons;
+-    int16_t d_x;
+-    int16_t d_y;
+-    int16_t d_scroll_y;
+-    int16_t d_scroll_x;
+-} __packed;
+-
+-struct zmk_hid_mouse_report {
+-    uint8_t report_id;
+-    struct zmk_hid_mouse_report_body body;
+-} __packed;
+-
+-#if IS_ENABLED(CONFIG_ZMK_POINTING_SMOOTH_SCROLLING)
+-
+-struct zmk_hid_mouse_resolution_feature_report_body {
+-    uint8_t wheel_res : 4;
+-    uint8_t hwheel_res : 4;
+-} __packed;
+-
+-struct zmk_hid_mouse_resolution_feature_report {
+-    uint8_t report_id;
+-    struct zmk_hid_mouse_resolution_feature_report_body body;
+-} __packed;
+-
+-#endif // IS_ENABLED(CONFIG_ZMK_POINTING_SMOOTH_SCROLLING)
+-
+-#endif // IS_ENABLED(CONFIG_ZMK_POINTING)
+-
+-zmk_mod_flags_t zmk_hid_get_explicit_mods(void);
+-int zmk_hid_register_mod(zmk_mod_t modifier);
+-int zmk_hid_unregister_mod(zmk_mod_t modifier);
+-bool zmk_hid_mod_is_pressed(zmk_mod_t modifier);
+-
+-int zmk_hid_register_mods(zmk_mod_flags_t explicit_modifiers);
+-int zmk_hid_unregister_mods(zmk_mod_flags_t explicit_modifiers);
+-int zmk_hid_implicit_modifiers_press(zmk_mod_flags_t implicit_modifiers);
+-int zmk_hid_implicit_modifiers_release(void);
+-int zmk_hid_masked_modifiers_set(zmk_mod_flags_t masked_modifiers);
+-int zmk_hid_masked_modifiers_clear(void);
+-
+-int zmk_hid_keyboard_press(zmk_key_t key);
+-int zmk_hid_keyboard_release(zmk_key_t key);
+-void zmk_hid_keyboard_clear(void);
+-bool zmk_hid_keyboard_is_pressed(zmk_key_t key);
+-
+-int zmk_hid_consumer_press(zmk_key_t key);
+-int zmk_hid_consumer_release(zmk_key_t key);
+-void zmk_hid_consumer_clear(void);
+-bool zmk_hid_consumer_is_pressed(zmk_key_t key);
+-
+-int zmk_hid_press(uint32_t usage);
+-int zmk_hid_release(uint32_t usage);
+-bool zmk_hid_is_pressed(uint32_t usage);
+-
+-#if IS_ENABLED(CONFIG_ZMK_POINTING)
+-int zmk_hid_mouse_button_press(zmk_mouse_button_t button);
+-int zmk_hid_mouse_button_release(zmk_mouse_button_t button);
+-int zmk_hid_mouse_buttons_press(zmk_mouse_button_flags_t buttons);
+-int zmk_hid_mouse_buttons_release(zmk_mouse_button_flags_t buttons);
+-void zmk_hid_mouse_movement_set(int16_t x, int16_t y);
+-void zmk_hid_mouse_scroll_set(int16_t x, int16_t y);
+-void zmk_hid_mouse_movement_update(int16_t x, int16_t y);
+-void zmk_hid_mouse_scroll_update(int16_t x, int16_t y);
+-void zmk_hid_mouse_clear(void);
+-
+-#endif // IS_ENABLED(CONFIG_ZMK_POINTING)
+-
+-struct zmk_hid_keyboard_report *zmk_hid_get_keyboard_report(void);
+-struct zmk_hid_consumer_report *zmk_hid_get_consumer_report(void);
+-
+-#if IS_ENABLED(CONFIG_ZMK_USB_BOOT)
+-zmk_hid_boot_report_t *zmk_hid_get_boot_report();
+-#endif
+-
+-#if IS_ENABLED(CONFIG_ZMK_POINTING)
+-struct zmk_hid_mouse_report *zmk_hid_get_mouse_report();
+-#endif // IS_ENABLED(CONFIG_ZMK_POINTING)
++#define ZMK_HID_REPORT_ID_LAYER_STATE 0x04
++
++#ifndef HID_ITEM_TAG_PUSH
++#define HID_ITEM_TAG_PUSH 0xA
++#endif
++
++#ifndef HID_ITEM_TAG_POP
++#define HID_ITEM_TAG_POP 0xB
++#endif
++
++#define HID_PUSH HID_ITEM(HID_ITEM_TAG_PUSH, HID_ITEM_TYPE_GLOBAL, 0)
++
++#define HID_POP HID_ITEM(HID_ITEM_TAG_POP, HID_ITEM_TYPE_GLOBAL, 0)
++
++#ifndef HID_PHYSICAL_MIN8
++#define HID_PHYSICAL_MIN8(a) HID_ITEM(HID_ITEM_TAG_PHYSICAL_MIN, HID_ITEM_TYPE_GLOBAL, 1), a
++#endif
++
++#ifndef HID_PHYSICAL_MAX8
++#define HID_PHYSICAL_MAX8(a) HID_ITEM(HID_ITEM_TAG_PHYSICAL_MAX, HID_ITEM_TYPE_GLOBAL, 1), a
++#endif
++
++#define HID_USAGE16(a, b) HID_ITEM(HID_ITEM_TAG_USAGE, HID_ITEM_TYPE_LOCAL, 2), a, b
++
++#define HID_USAGE16_SINGLE(a) HID_USAGE16((a & 0xFF), ((a >> 8) & 0xFF))
++
++static const uint8_t zmk_hid_report_desc[] = {
++    HID_USAGE_PAGE(HID_USAGE_GEN_DESKTOP),
++    HID_USAGE(HID_USAGE_GD_KEYBOARD),
++    HID_COLLECTION(HID_COLLECTION_APPLICATION),
++    HID_REPORT_ID(ZMK_HID_REPORT_ID_KEYBOARD),
++    HID_USAGE_PAGE(HID_USAGE_KEY),
++    HID_USAGE_MIN8(HID_USAGE_KEY_KEYBOARD_LEFTCONTROL),
++    HID_USAGE_MAX8(HID_USAGE_KEY_KEYBOARD_RIGHT_GUI),
++    HID_LOGICAL_MIN8(0x00),
++    HID_LOGICAL_MAX8(0x01),
++
++    HID_REPORT_SIZE(0x01),
++    HID_REPORT_COUNT(0x08),
++    HID_INPUT(ZMK_HID_MAIN_VAL_DATA | ZMK_HID_MAIN_VAL_VAR | ZMK_HID_MAIN_VAL_ABS),
++
++    HID_USAGE_PAGE(HID_USAGE_KEY),
++    HID_REPORT_SIZE(0x08),
++    HID_REPORT_COUNT(0x01),
++    HID_INPUT(ZMK_HID_MAIN_VAL_CONST | ZMK_HID_MAIN_VAL_VAR | ZMK_HID_MAIN_VAL_ABS),
++
++#if IS_ENABLED(CONFIG_ZMK_HID_INDICATORS)
++
++    HID_USAGE_PAGE(HID_USAGE_LED),
++    HID_USAGE_MIN8(HID_USAGE_LED_NUM_LOCK),
++    HID_USAGE_MAX8(HID_USAGE_LED_KANA),
++    HID_REPORT_SIZE(0x01),
++    HID_REPORT_COUNT(0x05),
++    HID_OUTPUT(ZMK_HID_MAIN_VAL_DATA | ZMK_HID_MAIN_VAL_VAR | ZMK_HID_MAIN_VAL_ABS),
++
++    HID_USAGE_PAGE(HID_USAGE_LED),
++    HID_REPORT_SIZE(0x03),
++    HID_REPORT_COUNT(0x01),
++    HID_OUTPUT(ZMK_HID_MAIN_VAL_CONST | ZMK_HID_MAIN_VAL_VAR | ZMK_HID_MAIN_VAL_ABS),
++
++#endif // IS_ENABLED(CONFIG_ZMK_HID_INDICATORS)
++
++    HID_USAGE_PAGE(HID_USAGE_KEY),
++
++#if IS_ENABLED(CONFIG_ZMK_HID_REPORT_TYPE_NKRO)
++    HID_LOGICAL_MIN8(0x00),
++    HID_LOGICAL_MAX8(0x01),
++    HID_USAGE_MIN8(0x00),
++    HID_USAGE_MAX8(ZMK_HID_KEYBOARD_NKRO_MAX_USAGE),
++    HID_REPORT_SIZE(0x01),
++    HID_REPORT_COUNT(ZMK_HID_KEYBOARD_NKRO_MAX_USAGE + 1),
++    HID_INPUT(ZMK_HID_MAIN_VAL_DATA | ZMK_HID_MAIN_VAL_VAR | ZMK_HID_MAIN_VAL_ABS),
++#elif IS_ENABLED(CONFIG_ZMK_HID_REPORT_TYPE_HKRO)
++    HID_LOGICAL_MIN8(0x00),
++    HID_LOGICAL_MAX16(0xFF, 0x00),
++    HID_USAGE_MIN8(0x00),
++    HID_USAGE_MAX8(0xFF),
++    HID_REPORT_SIZE(0x08),
++    HID_REPORT_COUNT(CONFIG_ZMK_HID_KEYBOARD_REPORT_SIZE),
++    HID_INPUT(ZMK_HID_MAIN_VAL_DATA | ZMK_HID_MAIN_VAL_ARRAY | ZMK_HID_MAIN_VAL_ABS),
++#else
++#error "A proper HID report type must be selected"
++#endif
++
++#if IS_ENABLED(CONFIG_ZMK_HID_LAYER_STATE_REPORT)
++// Keep the vendor report inside the keyboard collection for macOS IOHID matching.
++    HID_PUSH,
++    HID_REPORT_ID(ZMK_HID_REPORT_ID_LAYER_STATE),
++    0x06, 0x00, 0xFF, // Vendor-defined Usage Page 0xFF00.
++    HID_USAGE(0x02),
++    HID_USAGE(0x03),
++    HID_LOGICAL_MIN8(0x00),
++    HID_LOGICAL_MAX16(0xFF, 0x00),
++    HID_REPORT_SIZE(0x08),
++    HID_REPORT_COUNT(0x02),
++    HID_INPUT(ZMK_HID_MAIN_VAL_DATA | ZMK_HID_MAIN_VAL_VAR | ZMK_HID_MAIN_VAL_ABS),
++    HID_POP,
++#endif
++
++    HID_END_COLLECTION,
++    HID_USAGE_PAGE(HID_USAGE_CONSUMER),
++    HID_USAGE(HID_USAGE_CONSUMER_CONSUMER_CONTROL),
++    HID_COLLECTION(HID_COLLECTION_APPLICATION),
++    HID_REPORT_ID(ZMK_HID_REPORT_ID_CONSUMER),
++    HID_USAGE_PAGE(HID_USAGE_CONSUMER),
++
++#if IS_ENABLED(CONFIG_ZMK_HID_CONSUMER_REPORT_USAGES_BASIC)
++    HID_LOGICAL_MIN8(0x00),
++    HID_LOGICAL_MAX16(0xFF, 0x00),
++    HID_USAGE_MIN8(0x00),
++    HID_USAGE_MAX8(0xFF),
++    HID_REPORT_SIZE(0x08),
++#elif IS_ENABLED(CONFIG_ZMK_HID_CONSUMER_REPORT_USAGES_FULL)
++    HID_LOGICAL_MIN8(0x00),
++    HID_LOGICAL_MAX16(0xFF, 0x0F),
++    HID_USAGE_MIN8(0x00),
++    HID_USAGE_MAX16(0xFF, 0x0F),
++    HID_REPORT_SIZE(0x10),
++#else
++#error "A proper consumer HID report usage range must be selected"
++#endif
++    HID_REPORT_COUNT(CONFIG_ZMK_HID_CONSUMER_REPORT_SIZE),
++    HID_INPUT(ZMK_HID_MAIN_VAL_DATA | ZMK_HID_MAIN_VAL_ARRAY | ZMK_HID_MAIN_VAL_ABS),
++    HID_END_COLLECTION,
++
++#if IS_ENABLED(CONFIG_ZMK_POINTING)
++    HID_USAGE_PAGE(HID_USAGE_GD),
++    HID_USAGE(HID_USAGE_GD_MOUSE),
++    HID_COLLECTION(HID_COLLECTION_APPLICATION),
++    HID_REPORT_ID(ZMK_HID_REPORT_ID_MOUSE),
++    HID_USAGE(HID_USAGE_GD_POINTER),
++    HID_COLLECTION(HID_COLLECTION_PHYSICAL),
++    HID_USAGE_PAGE(HID_USAGE_BUTTON),
++    HID_USAGE_MIN8(0x1),
++    HID_USAGE_MAX8(ZMK_HID_MOUSE_NUM_BUTTONS),
++    HID_LOGICAL_MIN8(0x00),
++    HID_LOGICAL_MAX8(0x01),
++    HID_REPORT_SIZE(0x01),
++    HID_REPORT_COUNT(0x5),
++    HID_INPUT(ZMK_HID_MAIN_VAL_DATA | ZMK_HID_MAIN_VAL_VAR | ZMK_HID_MAIN_VAL_ABS),
++    // Constant padding for the last 3 bits.
++    HID_REPORT_SIZE(0x03),
++    HID_REPORT_COUNT(0x01),
++    HID_INPUT(ZMK_HID_MAIN_VAL_CONST | ZMK_HID_MAIN_VAL_VAR | ZMK_HID_MAIN_VAL_ABS),
++    // Some OSes ignore pointer devices without X/Y data.
++    HID_USAGE_PAGE(HID_USAGE_GEN_DESKTOP),
++    HID_USAGE(HID_USAGE_GD_X),
++    HID_USAGE(HID_USAGE_GD_Y),
++    HID_LOGICAL_MIN16(0x00, 0x80),
++    HID_LOGICAL_MAX16(0xFF, 0x7F),
++    HID_REPORT_SIZE(0x10),
++    HID_REPORT_COUNT(0x02),
++    HID_INPUT(ZMK_HID_MAIN_VAL_DATA | ZMK_HID_MAIN_VAL_VAR | ZMK_HID_MAIN_VAL_REL),
++    HID_COLLECTION(HID_COLLECTION_LOGICAL),
++#if IS_ENABLED(CONFIG_ZMK_POINTING_SMOOTH_SCROLLING)
++    HID_USAGE(HID_USAGE_GD_RESOLUTION_MULTIPLIER),
++    HID_LOGICAL_MIN8(0x00),
++    HID_LOGICAL_MAX8(0x0F),
++    HID_PHYSICAL_MIN8(0x01),
++    HID_PHYSICAL_MAX8(0x10),
++    HID_REPORT_SIZE(0x04),
++    HID_REPORT_COUNT(0x01),
++    HID_PUSH,
++    HID_FEATURE(ZMK_HID_MAIN_VAL_DATA | ZMK_HID_MAIN_VAL_VAR | ZMK_HID_MAIN_VAL_ABS),
++#endif // IS_ENABLED(CONFIG_ZMK_POINTING_SMOOTH_SCROLLING)
++    HID_USAGE(HID_USAGE_GD_WHEEL),
++    HID_LOGICAL_MIN16(0x00, 0x80),
++    HID_LOGICAL_MAX16(0xFF, 0x7F),
++    HID_PHYSICAL_MIN8(0x00),
++    HID_PHYSICAL_MAX8(0x00),
++    HID_REPORT_SIZE(0x10),
++    HID_REPORT_COUNT(0x01),
++    HID_INPUT(ZMK_HID_MAIN_VAL_DATA | ZMK_HID_MAIN_VAL_VAR | ZMK_HID_MAIN_VAL_REL),
++    HID_END_COLLECTION,
++    HID_COLLECTION(HID_COLLECTION_LOGICAL),
++#if IS_ENABLED(CONFIG_ZMK_POINTING_SMOOTH_SCROLLING)
++    HID_USAGE(HID_USAGE_GD_RESOLUTION_MULTIPLIER),
++    HID_POP,
++    HID_FEATURE(ZMK_HID_MAIN_VAL_DATA | ZMK_HID_MAIN_VAL_VAR | ZMK_HID_MAIN_VAL_ABS),
++#endif // IS_ENABLED(CONFIG_ZMK_POINTING_SMOOTH_SCROLLING)
++    HID_USAGE_PAGE(HID_USAGE_CONSUMER),
++    HID_USAGE16_SINGLE(HID_USAGE_CONSUMER_AC_PAN),
++    HID_LOGICAL_MIN16(0x00, 0x80),
++    HID_LOGICAL_MAX16(0xFF, 0x7F),
++    HID_PHYSICAL_MIN8(0x00),
++    HID_PHYSICAL_MAX8(0x00),
++    HID_REPORT_SIZE(0x10),
++    HID_REPORT_COUNT(0x01),
++    HID_INPUT(ZMK_HID_MAIN_VAL_DATA | ZMK_HID_MAIN_VAL_VAR | ZMK_HID_MAIN_VAL_REL),
++    HID_END_COLLECTION,
++    HID_END_COLLECTION,
++    HID_END_COLLECTION,
++#endif // IS_ENABLED(CONFIG_ZMK_POINTING)
++};
++
++#if IS_ENABLED(CONFIG_ZMK_USB_BOOT)
++
++#define HID_ERROR_ROLLOVER 0x1
++#define HID_BOOT_KEY_LEN 6
++
++#if IS_ENABLED(CONFIG_ZMK_HID_REPORT_TYPE_HKRO) &&                                                 \
++    CONFIG_ZMK_HID_KEYBOARD_REPORT_SIZE == HID_BOOT_KEY_LEN
++typedef struct zmk_hid_keyboard_report_body zmk_hid_boot_report_t;
++#else
++struct zmk_hid_boot_report {
++    zmk_mod_flags_t modifiers;
++    uint8_t _reserved;
++    uint8_t keys[HID_BOOT_KEY_LEN];
++} __packed;
++
++typedef struct zmk_hid_boot_report zmk_hid_boot_report_t;
++#endif
++#endif
++
++struct zmk_hid_keyboard_report_body {
++    zmk_mod_flags_t modifiers;
++    uint8_t _reserved;
++#if IS_ENABLED(CONFIG_ZMK_HID_REPORT_TYPE_NKRO)
++    uint8_t keys[DIV_ROUND_UP(ZMK_HID_KEYBOARD_NKRO_MAX_USAGE + 1, 8)];
++#elif IS_ENABLED(CONFIG_ZMK_HID_REPORT_TYPE_HKRO)
++    uint8_t keys[CONFIG_ZMK_HID_KEYBOARD_REPORT_SIZE];
++#endif
++} __packed;
++
++struct zmk_hid_keyboard_report {
++    uint8_t report_id;
++    struct zmk_hid_keyboard_report_body body;
++} __packed;
++
++struct zmk_hid_led_report_body {
++    uint8_t leds;
++} __packed;
++
++struct zmk_hid_led_report {
++    uint8_t report_id;
++    struct zmk_hid_led_report_body body;
++} __packed;
++
++struct zmk_hid_consumer_report_body {
++#if IS_ENABLED(CONFIG_ZMK_HID_CONSUMER_REPORT_USAGES_BASIC)
++    uint8_t keys[CONFIG_ZMK_HID_CONSUMER_REPORT_SIZE];
++#elif IS_ENABLED(CONFIG_ZMK_HID_CONSUMER_REPORT_USAGES_FULL)
++    uint16_t keys[CONFIG_ZMK_HID_CONSUMER_REPORT_SIZE];
++#endif
++} __packed;
++
++struct zmk_hid_consumer_report {
++    uint8_t report_id;
++    struct zmk_hid_consumer_report_body body;
++} __packed;
++
++#if IS_ENABLED(CONFIG_ZMK_POINTING)
++struct zmk_hid_mouse_report_body {
++    zmk_mouse_button_flags_t buttons;
++    int16_t d_x;
++    int16_t d_y;
++    int16_t d_scroll_y;
++    int16_t d_scroll_x;
++} __packed;
++
++struct zmk_hid_mouse_report {
++    uint8_t report_id;
++    struct zmk_hid_mouse_report_body body;
++} __packed;
++
++#if IS_ENABLED(CONFIG_ZMK_POINTING_SMOOTH_SCROLLING)
++
++struct zmk_hid_mouse_resolution_feature_report_body {
++    uint8_t wheel_res : 4;
++    uint8_t hwheel_res : 4;
++} __packed;
++
++struct zmk_hid_mouse_resolution_feature_report {
++    uint8_t report_id;
++    struct zmk_hid_mouse_resolution_feature_report_body body;
++} __packed;
++
++#endif // IS_ENABLED(CONFIG_ZMK_POINTING_SMOOTH_SCROLLING)
++
++#endif // IS_ENABLED(CONFIG_ZMK_POINTING)
++
++zmk_mod_flags_t zmk_hid_get_explicit_mods(void);
++int zmk_hid_register_mod(zmk_mod_t modifier);
++int zmk_hid_unregister_mod(zmk_mod_t modifier);
++bool zmk_hid_mod_is_pressed(zmk_mod_t modifier);
++
++int zmk_hid_register_mods(zmk_mod_flags_t explicit_modifiers);
++int zmk_hid_unregister_mods(zmk_mod_flags_t explicit_modifiers);
++int zmk_hid_implicit_modifiers_press(zmk_mod_flags_t implicit_modifiers);
++int zmk_hid_implicit_modifiers_release(void);
++int zmk_hid_masked_modifiers_set(zmk_mod_flags_t masked_modifiers);
++int zmk_hid_masked_modifiers_clear(void);
++
++int zmk_hid_keyboard_press(zmk_key_t key);
++int zmk_hid_keyboard_release(zmk_key_t key);
++void zmk_hid_keyboard_clear(void);
++bool zmk_hid_keyboard_is_pressed(zmk_key_t key);
++
++int zmk_hid_consumer_press(zmk_key_t key);
++int zmk_hid_consumer_release(zmk_key_t key);
++void zmk_hid_consumer_clear(void);
++bool zmk_hid_consumer_is_pressed(zmk_key_t key);
++
++int zmk_hid_press(uint32_t usage);
++int zmk_hid_release(uint32_t usage);
++bool zmk_hid_is_pressed(uint32_t usage);
++
++#if IS_ENABLED(CONFIG_ZMK_POINTING)
++int zmk_hid_mouse_button_press(zmk_mouse_button_t button);
++int zmk_hid_mouse_button_release(zmk_mouse_button_t button);
++int zmk_hid_mouse_buttons_press(zmk_mouse_button_flags_t buttons);
++int zmk_hid_mouse_buttons_release(zmk_mouse_button_flags_t buttons);
++void zmk_hid_mouse_movement_set(int16_t x, int16_t y);
++void zmk_hid_mouse_scroll_set(int16_t x, int16_t y);
++void zmk_hid_mouse_movement_update(int16_t x, int16_t y);
++void zmk_hid_mouse_scroll_update(int16_t x, int16_t y);
++void zmk_hid_mouse_clear(void);
++
++#endif // IS_ENABLED(CONFIG_ZMK_POINTING)
++
++struct zmk_hid_keyboard_report *zmk_hid_get_keyboard_report(void);
++struct zmk_hid_consumer_report *zmk_hid_get_consumer_report(void);
++
++#if IS_ENABLED(CONFIG_ZMK_USB_BOOT)
++zmk_hid_boot_report_t *zmk_hid_get_boot_report();
++#endif
++
++#if IS_ENABLED(CONFIG_ZMK_POINTING)
++struct zmk_hid_mouse_report *zmk_hid_get_mouse_report();
++#endif // IS_ENABLED(CONFIG_ZMK_POINTING)
++
++#if IS_ENABLED(CONFIG_ZMK_HID_LAYER_STATE_REPORT)
++struct zmk_hid_layer_state_report_body {
++    uint8_t layer;
++    uint8_t locked;
++} __packed;
++
++struct zmk_hid_layer_state_report {
++    uint8_t report_id;
++    struct zmk_hid_layer_state_report_body body;
++} __packed;
++
++struct zmk_hid_layer_state_report *zmk_hid_get_layer_state_report(void);
++void zmk_hid_layer_state_set(uint8_t layer, uint8_t locked);
++#endif
+--- a/include/zmk/keymap.h
++++ b/include/zmk/keymap.h
+@@ -84,3 +84,8 @@
+         .param2 = COND_CODE_0(DT_PHA_HAS_CELL_AT_IDX(drv_inst, bindings, idx, param2), (0),        \
+                               (DT_PHA_BY_IDX(drv_inst, bindings, idx, param2))),                   \
+     }
++
++#if IS_ENABLED(CONFIG_ZMK_HID_LAYER_STATE_REPORT)
++bool zmk_keymap_layer_locked(zmk_keymap_layer_id_t layer);
++int zmk_keymap_layer_lock(zmk_keymap_layer_id_t layer);
++#endif
+--- a/include/zmk/hog.h
++++ b/include/zmk/hog.h
+@@ -15,3 +15,7 @@
+ #if IS_ENABLED(CONFIG_ZMK_POINTING)
+ int zmk_hog_send_mouse_report(struct zmk_hid_mouse_report_body *body);
+ #endif // IS_ENABLED(CONFIG_ZMK_POINTING)
++
++#if IS_ENABLED(CONFIG_ZMK_HID_LAYER_STATE_REPORT)
++int zmk_hog_send_layer_state_report(struct zmk_hid_layer_state_report_body *report);
++#endif
+--- a/include/zmk/usb_hid.h
++++ b/include/zmk/usb_hid.h
+@@ -14,3 +14,7 @@
+ int zmk_usb_hid_send_mouse_report(void);
+ #endif // IS_ENABLED(CONFIG_ZMK_POINTING)
+ void zmk_usb_hid_set_protocol(uint8_t protocol);
++
++#if IS_ENABLED(CONFIG_ZMK_HID_LAYER_STATE_REPORT)
++int zmk_usb_hid_send_layer_state_report(void);
++#endif
+--- a/src/hid.c
++++ b/src/hid.c
+@@ -477,3 +477,18 @@
+ struct zmk_hid_mouse_report *zmk_hid_get_mouse_report(void) { return &mouse_report; }
+ 
+ #endif // IS_ENABLED(CONFIG_ZMK_POINTING)
++
++#if IS_ENABLED(CONFIG_ZMK_HID_LAYER_STATE_REPORT)
++static struct zmk_hid_layer_state_report layer_state_report = {
++    .report_id = ZMK_HID_REPORT_ID_LAYER_STATE,
++};
++
++struct zmk_hid_layer_state_report *zmk_hid_get_layer_state_report(void) {
++    return &layer_state_report;
++}
++
++void zmk_hid_layer_state_set(uint8_t layer, uint8_t locked) {
++    layer_state_report.body.layer = layer;
++    layer_state_report.body.locked = locked;
++}
++#endif
+--- a/src/keymap.c
++++ b/src/keymap.c
+@@ -24,199 +24,234 @@
+ #include <zmk/events/sensor_event.h>
+ 
+ static zmk_keymap_layers_state_t _zmk_keymap_layer_state = 0;
+-static zmk_keymap_layer_id_t _zmk_keymap_layer_default = 0;
+-
+-#define DT_DRV_COMPAT zmk_keymap
+-
+-#if !DT_NODE_EXISTS(DT_DRV_INST(0))
+-
+-#error "Keymap node not found, check a keymap is available and is has compatible = "zmk,keymap" set"
+-
+-#endif
+-
+-#define TRANSFORMED_LAYER(node)                                                                    \
+-    {COND_CODE_1(DT_NODE_HAS_PROP(node, bindings),                                                 \
+-                 (LISTIFY(DT_PROP_LEN(node, bindings), ZMK_KEYMAP_EXTRACT_BINDING, (, ), node)),   \
+-                 ())}
+-
+-#if ZMK_KEYMAP_HAS_SENSORS
+-#define _TRANSFORM_SENSOR_ENTRY(idx, layer)                                                        \
+-    {                                                                                              \
+-        .behavior_dev = DEVICE_DT_NAME(DT_PHANDLE_BY_IDX(layer, sensor_bindings, idx)),            \
+-        .param1 = COND_CODE_0(DT_PHA_HAS_CELL_AT_IDX(layer, sensor_bindings, idx, param1), (0),    \
+-                              (DT_PHA_BY_IDX(layer, sensor_bindings, idx, param1))),               \
+-        .param2 = COND_CODE_0(DT_PHA_HAS_CELL_AT_IDX(layer, sensor_bindings, idx, param2), (0),    \
+-                              (DT_PHA_BY_IDX(layer, sensor_bindings, idx, param2))),               \
+-    }
+-
+-#define SENSOR_LAYER(node)                                                                         \
+-    COND_CODE_1(                                                                                   \
+-        DT_NODE_HAS_PROP(node, sensor_bindings),                                                   \
+-        ({LISTIFY(DT_PROP_LEN(node, sensor_bindings), _TRANSFORM_SENSOR_ENTRY, (, ), node)}),      \
+-        ({}))
+-
+-#endif /* ZMK_KEYMAP_HAS_SENSORS */
+-
+-#define LAYER_NAME(node) DT_PROP_OR(node, display_name, DT_PROP_OR(node, label, ""))
+-
+-// State
+-
+-// When a behavior handles a key position "down" event, we record the layer state
+-// here so that even if that layer is deactivated before the "up", event, we
+-// still send the release event to the behavior in that layer also.
+-static uint32_t zmk_keymap_active_behavior_layer[ZMK_KEYMAP_LEN];
+-
+-#if IS_ENABLED(CONFIG_ZMK_KEYMAP_LAYER_REORDERING)
+-
+-static uint8_t keymap_layer_orders[ZMK_KEYMAP_LAYERS_LEN];
+-
+-#endif // IS_ENABLED(CONFIG_ZMK_KEYMAP_LAYER_REORDERING)
+-
+-#define KEYMAP_VAR(_name, _opts, no_init)                                                          \
+-    static _opts struct zmk_behavior_binding _name[ZMK_KEYMAP_LAYERS_LEN][ZMK_KEYMAP_LEN] = {      \
+-        COND_CODE_0(                                                                               \
+-            no_init,                                                                               \
+-            (COND_CODE_1(IS_ENABLED(CONFIG_ZMK_STUDIO),                                            \
+-                         (DT_INST_FOREACH_CHILD_SEP(0, TRANSFORMED_LAYER, (, ))),                  \
+-                         (DT_INST_FOREACH_CHILD_STATUS_OKAY_SEP(0, TRANSFORMED_LAYER, (, ))))),    \
+-            (0))};
+-
+-KEYMAP_VAR(zmk_keymap, COND_CODE_1(IS_ENABLED(CONFIG_ZMK_KEYMAP_SETTINGS_STORAGE), (), (const)),
+-           IS_ENABLED(CONFIG_ZMK_STUDIO))
+-
+-#if IS_ENABLED(CONFIG_ZMK_KEYMAP_SETTINGS_STORAGE)
+-
+-KEYMAP_VAR(zmk_stock_keymap, const, 0)
+-
+-static char zmk_keymap_layer_names[ZMK_KEYMAP_LAYERS_LEN][CONFIG_ZMK_KEYMAP_LAYER_NAME_MAX_LEN] = {
+-    DT_INST_FOREACH_CHILD_SEP(0, LAYER_NAME, (, ))};
+-
+-static uint32_t changed_layer_names = 0;
+-
+-#else
+-
+-static const char *zmk_keymap_layer_names[ZMK_KEYMAP_LAYERS_LEN] = {
+-    DT_INST_FOREACH_CHILD_SEP(0, LAYER_NAME, (, ))};
+-
+-#endif
+-
+-#if ZMK_KEYMAP_HAS_SENSORS
+-
+-static struct zmk_behavior_binding
+-    zmk_sensor_keymap[ZMK_KEYMAP_LAYERS_LEN][ZMK_KEYMAP_SENSORS_LEN] = {
+-        DT_INST_FOREACH_CHILD_SEP(0, SENSOR_LAYER, (, ))};
+-
+-#endif /* ZMK_KEYMAP_HAS_SENSORS */
+-
+-#define ASSERT_LAYER_VAL(_layer, _fail_ret)                                                        \
+-    if ((_layer) >= ZMK_KEYMAP_LAYERS_LEN) {                                                       \
+-        return (_fail_ret);                                                                        \
+-    }
+-
+-#if IS_ENABLED(CONFIG_ZMK_KEYMAP_LAYER_REORDERING)
+-
+-uint8_t map_layer_id_to_index(zmk_keymap_layer_id_t layer_id) {
+-    for (uint8_t i = 0; i < ZMK_KEYMAP_LAYERS_LEN; i++) {
+-        if (keymap_layer_orders[i] == layer_id) {
+-            return i;
+-        }
+-    }
+-
+-    return ZMK_KEYMAP_LAYER_ID_INVAL;
+-}
+-
+-#define LAYER_INDEX_TO_ID(_layer) keymap_layer_orders[_layer]
+-#define LAYER_ID_TO_INDEX(_layer) map_layer_id_to_index(_layer)
+-
+-#else
+-
+-#define LAYER_INDEX_TO_ID(_layer) _layer
+-#define LAYER_ID_TO_INDEX(_layer) _layer
+-
+-#endif // IS_ENABLED(CONFIG_ZMK_KEYMAP_LAYER_REORDERING)
+-
+-static inline int set_layer_state(zmk_keymap_layer_id_t layer_id, bool state) {
+-    int ret = 0;
+-    if (layer_id >= ZMK_KEYMAP_LAYERS_LEN) {
+-        return -EINVAL;
+-    }
+-
+-    // Default layer should *always* remain active
+-    if (layer_id == _zmk_keymap_layer_default && !state) {
+-        return 0;
+-    }
+-
+-    zmk_keymap_layers_state_t old_state = _zmk_keymap_layer_state;
+-    WRITE_BIT(_zmk_keymap_layer_state, layer_id, state);
+-    // Don't send state changes unless there was an actual change
+-    if (old_state != _zmk_keymap_layer_state) {
+-        LOG_DBG("layer_changed: layer %d state %d", layer_id, state);
+-        ret = raise_layer_state_changed(layer_id, state);
+-        if (ret < 0) {
+-            LOG_WRN("Failed to raise layer state changed (%d)", ret);
+-        }
+-    }
+-
+-    return ret;
+-}
+-
+-zmk_keymap_layer_id_t zmk_keymap_layer_index_to_id(zmk_keymap_layer_index_t layer_index) {
+-    ASSERT_LAYER_VAL(layer_index, UINT8_MAX);
+-
+-    return LAYER_INDEX_TO_ID(layer_index);
+-}
+-
+-zmk_keymap_layer_id_t zmk_keymap_layer_default(void) { return _zmk_keymap_layer_default; }
+-
+-zmk_keymap_layers_state_t zmk_keymap_layer_state(void) { return _zmk_keymap_layer_state; }
+-
+-bool zmk_keymap_layer_active_with_state(zmk_keymap_layer_id_t layer,
+-                                        zmk_keymap_layers_state_t state_to_test) {
+-    // The default layer is assumed to be ALWAYS ACTIVE so we include an || here to ensure nobody
+-    // breaks up that assumption by accident
+-    return (state_to_test & (BIT(layer))) == (BIT(layer)) || layer == _zmk_keymap_layer_default;
+-};
+-
+-bool zmk_keymap_layer_active(zmk_keymap_layer_id_t layer) {
+-    return zmk_keymap_layer_active_with_state(layer, _zmk_keymap_layer_state);
+-};
+-
+-zmk_keymap_layer_index_t zmk_keymap_highest_layer_active(void) {
+-    for (int layer_idx = ZMK_KEYMAP_LAYERS_LEN - 1;
+-         layer_idx >= LAYER_ID_TO_INDEX(_zmk_keymap_layer_default); layer_idx--) {
+-        zmk_keymap_layer_id_t layer_id = LAYER_INDEX_TO_ID(layer_idx);
+-
+-        if (layer_id == ZMK_KEYMAP_LAYER_ID_INVAL) {
+-            continue;
+-        }
+-        if (zmk_keymap_layer_active(layer_id)) {
+-            return LAYER_ID_TO_INDEX(layer_id);
+-        }
+-    }
+-
+-    return LAYER_ID_TO_INDEX(zmk_keymap_layer_default());
+-}
+-
+-int zmk_keymap_layer_activate(zmk_keymap_layer_id_t layer) { return set_layer_state(layer, true); };
+-
+-int zmk_keymap_layer_deactivate(zmk_keymap_layer_id_t layer) {
+-    return set_layer_state(layer, false);
+-};
+-
+-int zmk_keymap_layer_toggle(zmk_keymap_layer_id_t layer) {
+-    if (zmk_keymap_layer_active(layer)) {
+-        return zmk_keymap_layer_deactivate(layer);
+-    }
+-
+-    return zmk_keymap_layer_activate(layer);
+-};
+-
+-int zmk_keymap_layer_to(zmk_keymap_layer_id_t layer) {
+-    for (int i = ZMK_KEYMAP_LAYERS_LEN - 1; i >= 0; i--) {
+-        zmk_keymap_layer_deactivate(i);
+-    }
+-
+-    zmk_keymap_layer_activate(layer);
++#if IS_ENABLED(CONFIG_ZMK_HID_LAYER_STATE_REPORT)
++static zmk_keymap_layers_state_t locked_layers;
++#endif
++static zmk_keymap_layer_id_t _zmk_keymap_layer_default = 0;
++
++#define DT_DRV_COMPAT zmk_keymap
++
++#if !DT_NODE_EXISTS(DT_DRV_INST(0))
++
++#error "Keymap node not found, check a keymap is available and is has compatible = "zmk,keymap" set"
++
++#endif
++
++#define TRANSFORMED_LAYER(node)                                                                    \
++    {COND_CODE_1(DT_NODE_HAS_PROP(node, bindings),                                                 \
++                 (LISTIFY(DT_PROP_LEN(node, bindings), ZMK_KEYMAP_EXTRACT_BINDING, (, ), node)),   \
++                 ())}
++
++#if ZMK_KEYMAP_HAS_SENSORS
++#define _TRANSFORM_SENSOR_ENTRY(idx, layer)                                                        \
++    {                                                                                              \
++        .behavior_dev = DEVICE_DT_NAME(DT_PHANDLE_BY_IDX(layer, sensor_bindings, idx)),            \
++        .param1 = COND_CODE_0(DT_PHA_HAS_CELL_AT_IDX(layer, sensor_bindings, idx, param1), (0),    \
++                              (DT_PHA_BY_IDX(layer, sensor_bindings, idx, param1))),               \
++        .param2 = COND_CODE_0(DT_PHA_HAS_CELL_AT_IDX(layer, sensor_bindings, idx, param2), (0),    \
++                              (DT_PHA_BY_IDX(layer, sensor_bindings, idx, param2))),               \
++    }
++
++#define SENSOR_LAYER(node)                                                                         \
++    COND_CODE_1(                                                                                   \
++        DT_NODE_HAS_PROP(node, sensor_bindings),                                                   \
++        ({LISTIFY(DT_PROP_LEN(node, sensor_bindings), _TRANSFORM_SENSOR_ENTRY, (, ), node)}),      \
++        ({}))
++
++#endif /* ZMK_KEYMAP_HAS_SENSORS */
++
++#define LAYER_NAME(node) DT_PROP_OR(node, display_name, DT_PROP_OR(node, label, ""))
++
++// State
++
++// When a behavior handles a key position "down" event, we record the layer state
++// here so that even if that layer is deactivated before the "up", event, we
++// still send the release event to the behavior in that layer also.
++static uint32_t zmk_keymap_active_behavior_layer[ZMK_KEYMAP_LEN];
++
++#if IS_ENABLED(CONFIG_ZMK_KEYMAP_LAYER_REORDERING)
++
++static uint8_t keymap_layer_orders[ZMK_KEYMAP_LAYERS_LEN];
++
++#endif // IS_ENABLED(CONFIG_ZMK_KEYMAP_LAYER_REORDERING)
++
++#define KEYMAP_VAR(_name, _opts, no_init)                                                          \
++    static _opts struct zmk_behavior_binding _name[ZMK_KEYMAP_LAYERS_LEN][ZMK_KEYMAP_LEN] = {      \
++        COND_CODE_0(                                                                               \
++            no_init,                                                                               \
++            (COND_CODE_1(IS_ENABLED(CONFIG_ZMK_STUDIO),                                            \
++                         (DT_INST_FOREACH_CHILD_SEP(0, TRANSFORMED_LAYER, (, ))),                  \
++                         (DT_INST_FOREACH_CHILD_STATUS_OKAY_SEP(0, TRANSFORMED_LAYER, (, ))))),    \
++            (0))};
++
++KEYMAP_VAR(zmk_keymap, COND_CODE_1(IS_ENABLED(CONFIG_ZMK_KEYMAP_SETTINGS_STORAGE), (), (const)),
++           IS_ENABLED(CONFIG_ZMK_STUDIO))
++
++#if IS_ENABLED(CONFIG_ZMK_KEYMAP_SETTINGS_STORAGE)
++
++KEYMAP_VAR(zmk_stock_keymap, const, 0)
++
++static char zmk_keymap_layer_names[ZMK_KEYMAP_LAYERS_LEN][CONFIG_ZMK_KEYMAP_LAYER_NAME_MAX_LEN] = {
++    DT_INST_FOREACH_CHILD_SEP(0, LAYER_NAME, (, ))};
++
++static uint32_t changed_layer_names = 0;
++
++#else
++
++static const char *zmk_keymap_layer_names[ZMK_KEYMAP_LAYERS_LEN] = {
++    DT_INST_FOREACH_CHILD_SEP(0, LAYER_NAME, (, ))};
++
++#endif
++
++#if ZMK_KEYMAP_HAS_SENSORS
++
++static struct zmk_behavior_binding
++    zmk_sensor_keymap[ZMK_KEYMAP_LAYERS_LEN][ZMK_KEYMAP_SENSORS_LEN] = {
++        DT_INST_FOREACH_CHILD_SEP(0, SENSOR_LAYER, (, ))};
++
++#endif /* ZMK_KEYMAP_HAS_SENSORS */
++
++#define ASSERT_LAYER_VAL(_layer, _fail_ret)                                                        \
++    if ((_layer) >= ZMK_KEYMAP_LAYERS_LEN) {                                                       \
++        return (_fail_ret);                                                                        \
++    }
++
++#if IS_ENABLED(CONFIG_ZMK_KEYMAP_LAYER_REORDERING)
++
++uint8_t map_layer_id_to_index(zmk_keymap_layer_id_t layer_id) {
++    for (uint8_t i = 0; i < ZMK_KEYMAP_LAYERS_LEN; i++) {
++        if (keymap_layer_orders[i] == layer_id) {
++            return i;
++        }
++    }
++
++    return ZMK_KEYMAP_LAYER_ID_INVAL;
++}
++
++#define LAYER_INDEX_TO_ID(_layer) keymap_layer_orders[_layer]
++#define LAYER_ID_TO_INDEX(_layer) map_layer_id_to_index(_layer)
++
++#else
++
++#define LAYER_INDEX_TO_ID(_layer) _layer
++#define LAYER_ID_TO_INDEX(_layer) _layer
++
++#endif // IS_ENABLED(CONFIG_ZMK_KEYMAP_LAYER_REORDERING)
++
++static inline int set_layer_state(zmk_keymap_layer_id_t layer_id, bool state, bool lock) {
++    int ret = 0;
++    if (layer_id >= ZMK_KEYMAP_LAYERS_LEN) {
++        return -EINVAL;
++    }
++
++    // Default layer should *always* remain active
++    if (layer_id == _zmk_keymap_layer_default && !state) {
++        return 0;
++    }
++
++    zmk_keymap_layers_state_t old_state = _zmk_keymap_layer_state;
++    WRITE_BIT(_zmk_keymap_layer_state, layer_id, state);
++    bool lock_changed = false;
++#if IS_ENABLED(CONFIG_ZMK_HID_LAYER_STATE_REPORT)
++    zmk_keymap_layers_state_t old_locked = locked_layers;
++    if (!state || lock) {
++        WRITE_BIT(locked_layers, layer_id, state);
++    }
++    lock_changed = old_locked != locked_layers;
++#else
++    ARG_UNUSED(lock);
++#endif
++    // Report changes in activation or lock state.
++    if (old_state != _zmk_keymap_layer_state || lock_changed) {
++        LOG_DBG("layer_changed: layer %d state %d", layer_id, state);
++        ret = raise_layer_state_changed(layer_id, state);
++        if (ret < 0) {
++            LOG_WRN("Failed to raise layer state changed (%d)", ret);
++        }
++    }
++
++    return ret;
++}
++
++zmk_keymap_layer_id_t zmk_keymap_layer_index_to_id(zmk_keymap_layer_index_t layer_index) {
++    ASSERT_LAYER_VAL(layer_index, UINT8_MAX);
++
++    return LAYER_INDEX_TO_ID(layer_index);
++}
++
++zmk_keymap_layer_id_t zmk_keymap_layer_default(void) { return _zmk_keymap_layer_default; }
++
++zmk_keymap_layers_state_t zmk_keymap_layer_state(void) { return _zmk_keymap_layer_state; }
++
++bool zmk_keymap_layer_active_with_state(zmk_keymap_layer_id_t layer,
++                                        zmk_keymap_layers_state_t state_to_test) {
++    // The default layer is assumed to be ALWAYS ACTIVE so we include an || here to ensure nobody
++    // breaks up that assumption by accident
++    return (state_to_test & (BIT(layer))) == (BIT(layer)) || layer == _zmk_keymap_layer_default;
++};
++
++bool zmk_keymap_layer_active(zmk_keymap_layer_id_t layer) {
++    return zmk_keymap_layer_active_with_state(layer, _zmk_keymap_layer_state);
++};
++
++zmk_keymap_layer_index_t zmk_keymap_highest_layer_active(void) {
++    for (int layer_idx = ZMK_KEYMAP_LAYERS_LEN - 1;
++         layer_idx >= LAYER_ID_TO_INDEX(_zmk_keymap_layer_default); layer_idx--) {
++        zmk_keymap_layer_id_t layer_id = LAYER_INDEX_TO_ID(layer_idx);
++
++        if (layer_id == ZMK_KEYMAP_LAYER_ID_INVAL) {
++            continue;
++        }
++        if (zmk_keymap_layer_active(layer_id)) {
++            return LAYER_ID_TO_INDEX(layer_id);
++        }
++    }
++
++    return LAYER_ID_TO_INDEX(zmk_keymap_layer_default());
++}
++
++int zmk_keymap_layer_activate(zmk_keymap_layer_id_t layer) { return set_layer_state(layer, true, false); };
++
++int zmk_keymap_layer_deactivate(zmk_keymap_layer_id_t layer) {
++    return set_layer_state(layer, false, false);
++};
++
++int zmk_keymap_layer_toggle(zmk_keymap_layer_id_t layer) {
++    if (zmk_keymap_layer_active(layer)) {
++        return zmk_keymap_layer_deactivate(layer);
++    }
++
++#if IS_ENABLED(CONFIG_ZMK_HID_LAYER_STATE_REPORT)
++    return zmk_keymap_layer_lock(layer);
++#else
++    return zmk_keymap_layer_activate(layer);
++#endif
++};
++
++#if IS_ENABLED(CONFIG_ZMK_HID_LAYER_STATE_REPORT)
++bool zmk_keymap_layer_locked(zmk_keymap_layer_id_t layer) {
++    return layer < ZMK_KEYMAP_LAYERS_LEN && (locked_layers & BIT(layer)) != 0;
++}
++
++int zmk_keymap_layer_lock(zmk_keymap_layer_id_t layer) {
++    return set_layer_state(layer, true, true);
++}
++#endif
++
++int zmk_keymap_layer_to(zmk_keymap_layer_id_t layer) {
++    for (int i = ZMK_KEYMAP_LAYERS_LEN - 1; i >= 0; i--) {
++        zmk_keymap_layer_deactivate(i);
++    }
++
++#if IS_ENABLED(CONFIG_ZMK_HID_LAYER_STATE_REPORT)
++    if (layer == zmk_keymap_layer_default()) {
++        zmk_keymap_layer_activate(layer);
++    } else {
++        zmk_keymap_layer_lock(layer);
++    }
++#else
++    zmk_keymap_layer_activate(layer);
++#endif
+ 
+     return 0;
+ }
+--- a/src/behaviors/behavior_toggle_layer.c
++++ b/src/behaviors/behavior_toggle_layer.c
+@@ -34,7 +34,11 @@
+     const struct behavior_tog_config *cfg = zmk_behavior_get_binding(binding->behavior_dev)->config;
+     switch (cfg->toggle_mode) {
+     case ON:
+-        return zmk_keymap_layer_activate(binding->param1);
++#if IS_ENABLED(CONFIG_ZMK_HID_LAYER_STATE_REPORT)
++        return zmk_keymap_layer_lock(binding->param1);
++#else
++        return zmk_keymap_layer_activate(binding->param1);
++#endif
+     case OFF:
+         return zmk_keymap_layer_deactivate(binding->param1);
+     case FLIP:
+--- a/src/hog.c
++++ b/src/hog.c
+@@ -90,377 +90,455 @@
+ 
+ #endif // IS_ENABLED(CONFIG_ZMK_POINTING)
+ 
+-static bool host_requests_notification = false;
+-static uint8_t ctrl_point;
+-// static uint8_t proto_mode;
+-
+-static ssize_t read_hids_info(struct bt_conn *conn, const struct bt_gatt_attr *attr, void *buf,
+-                              uint16_t len, uint16_t offset) {
+-    return bt_gatt_attr_read(conn, attr, buf, len, offset, attr->user_data,
+-                             sizeof(struct hids_info));
+-}
+-
+-static ssize_t read_hids_report_ref(struct bt_conn *conn, const struct bt_gatt_attr *attr,
+-                                    void *buf, uint16_t len, uint16_t offset) {
+-    return bt_gatt_attr_read(conn, attr, buf, len, offset, attr->user_data,
+-                             sizeof(struct hids_report));
+-}
+-
+-static ssize_t read_hids_report_map(struct bt_conn *conn, const struct bt_gatt_attr *attr,
+-                                    void *buf, uint16_t len, uint16_t offset) {
+-    return bt_gatt_attr_read(conn, attr, buf, len, offset, zmk_hid_report_desc,
+-                             sizeof(zmk_hid_report_desc));
+-}
+-
+-static ssize_t read_hids_input_report(struct bt_conn *conn, const struct bt_gatt_attr *attr,
+-                                      void *buf, uint16_t len, uint16_t offset) {
+-    struct zmk_hid_keyboard_report_body *report_body = &zmk_hid_get_keyboard_report()->body;
+-    return bt_gatt_attr_read(conn, attr, buf, len, offset, report_body,
+-                             sizeof(struct zmk_hid_keyboard_report_body));
+-}
+-
+-#if IS_ENABLED(CONFIG_ZMK_HID_INDICATORS)
+-static ssize_t write_hids_leds_report(struct bt_conn *conn, const struct bt_gatt_attr *attr,
+-                                      const void *buf, uint16_t len, uint16_t offset,
+-                                      uint8_t flags) {
+-    if (offset != 0) {
+-        return BT_GATT_ERR(BT_ATT_ERR_INVALID_OFFSET);
+-    }
+-    if (len != sizeof(struct zmk_hid_led_report_body)) {
+-        return BT_GATT_ERR(BT_ATT_ERR_INVALID_ATTRIBUTE_LEN);
+-    }
+-
+-    struct zmk_hid_led_report_body *report = (struct zmk_hid_led_report_body *)buf;
+-    int profile = zmk_ble_profile_index(bt_conn_get_dst(conn));
+-    if (profile < 0) {
+-        return BT_GATT_ERR(BT_ATT_ERR_UNLIKELY);
+-    }
+-
+-    struct zmk_endpoint_instance endpoint = {.transport = ZMK_TRANSPORT_BLE,
+-                                             .ble = {
+-                                                 .profile_index = profile,
+-                                             }};
+-    zmk_hid_indicators_process_report(report, endpoint);
+-
+-    return len;
+-}
+-
+-#endif // IS_ENABLED(CONFIG_ZMK_HID_INDICATORS)
+-
+-static ssize_t read_hids_consumer_input_report(struct bt_conn *conn,
+-                                               const struct bt_gatt_attr *attr, void *buf,
+-                                               uint16_t len, uint16_t offset) {
+-    struct zmk_hid_consumer_report_body *report_body = &zmk_hid_get_consumer_report()->body;
+-    return bt_gatt_attr_read(conn, attr, buf, len, offset, report_body,
+-                             sizeof(struct zmk_hid_consumer_report_body));
+-}
+-
+-#if IS_ENABLED(CONFIG_ZMK_POINTING)
+-
+-static ssize_t read_hids_mouse_input_report(struct bt_conn *conn, const struct bt_gatt_attr *attr,
+-                                            void *buf, uint16_t len, uint16_t offset) {
+-    struct zmk_hid_mouse_report_body *report_body = &zmk_hid_get_mouse_report()->body;
+-    return bt_gatt_attr_read(conn, attr, buf, len, offset, report_body,
+-                             sizeof(struct zmk_hid_mouse_report_body));
+-}
+-
+-#if IS_ENABLED(CONFIG_ZMK_POINTING_SMOOTH_SCROLLING)
+-
+-static ssize_t read_hids_mouse_feature_report(struct bt_conn *conn, const struct bt_gatt_attr *attr,
+-                                              void *buf, uint16_t len, uint16_t offset) {
+-
+-    int profile = zmk_ble_profile_index(bt_conn_get_dst(conn));
+-    if (profile < 0) {
+-        LOG_DBG("   BT_ATT_ERR_UNLIKELY");
+-        return BT_GATT_ERR(BT_ATT_ERR_UNLIKELY);
+-    }
+-
+-    struct zmk_endpoint_instance endpoint = {
+-        .transport = ZMK_TRANSPORT_BLE,
+-        .ble = {.profile_index = profile},
+-    };
+-
+-    struct zmk_pointing_resolution_multipliers mult =
+-        zmk_pointing_resolution_multipliers_get_profile(endpoint);
+-
+-    struct zmk_hid_mouse_resolution_feature_report_body report = {
+-        .wheel_res = mult.wheel,
+-        .hwheel_res = mult.hor_wheel,
+-    };
+-
+-    return bt_gatt_attr_read(conn, attr, buf, len, offset, &report,
+-                             sizeof(struct zmk_hid_mouse_resolution_feature_report_body));
+-}
+-
+-static ssize_t write_hids_mouse_feature_report(struct bt_conn *conn,
+-                                               const struct bt_gatt_attr *attr, const void *buf,
+-                                               uint16_t len, uint16_t offset, uint8_t flags) {
+-    if (offset != 0) {
+-        return BT_GATT_ERR(BT_ATT_ERR_INVALID_OFFSET);
+-    }
+-    if (len != sizeof(struct zmk_hid_mouse_resolution_feature_report_body)) {
+-        return BT_GATT_ERR(BT_ATT_ERR_INVALID_ATTRIBUTE_LEN);
+-    }
+-
+-    struct zmk_hid_mouse_resolution_feature_report_body *report =
+-        (struct zmk_hid_mouse_resolution_feature_report_body *)buf;
+-    int profile = zmk_ble_profile_index(bt_conn_get_dst(conn));
+-    if (profile < 0) {
+-        return BT_GATT_ERR(BT_ATT_ERR_UNLIKELY);
+-    }
+-
+-    struct zmk_endpoint_instance endpoint = {.transport = ZMK_TRANSPORT_BLE,
+-                                             .ble = {
+-                                                 .profile_index = profile,
+-                                             }};
+-    zmk_pointing_resolution_multipliers_process_report(report, endpoint);
+-
+-    return len;
+-}
+-
+-#endif // IS_ENABLED(CONFIG_ZMK_POINTING_SMOOTH_SCROLLING)
+-
+-#endif // IS_ENABLED(CONFIG_ZMK_POINTING)
+-
+-// static ssize_t write_proto_mode(struct bt_conn *conn,
+-//                                 const struct bt_gatt_attr *attr,
+-//                                 const void *buf, uint16_t len, uint16_t offset,
+-//                                 uint8_t flags)
+-// {
+-//     printk("PROTO CHANGED\n");
+-//     return 0;
+-// }
+-
+-static void input_ccc_changed(const struct bt_gatt_attr *attr, uint16_t value) {
+-    host_requests_notification = (value == BT_GATT_CCC_NOTIFY) ? 1 : 0;
+-}
+-
+-static ssize_t write_ctrl_point(struct bt_conn *conn, const struct bt_gatt_attr *attr,
+-                                const void *buf, uint16_t len, uint16_t offset, uint8_t flags) {
+-    uint8_t *value = attr->user_data;
+-
+-    if (offset + len > sizeof(ctrl_point)) {
+-        return BT_GATT_ERR(BT_ATT_ERR_INVALID_OFFSET);
+-    }
+-
+-    memcpy(value + offset, buf, len);
+-
+-    return len;
+-}
+-
+-/* HID Service Declaration */
+-BT_GATT_SERVICE_DEFINE(
+-    hog_svc, BT_GATT_PRIMARY_SERVICE(BT_UUID_HIDS),
+-    //    BT_GATT_CHARACTERISTIC(BT_UUID_HIDS_PROTOCOL_MODE, BT_GATT_CHRC_WRITE_WITHOUT_RESP,
+-    //                           BT_GATT_PERM_WRITE, NULL, write_proto_mode, &proto_mode),
+-    BT_GATT_CHARACTERISTIC(BT_UUID_HIDS_INFO, BT_GATT_CHRC_READ, BT_GATT_PERM_READ, read_hids_info,
+-                           NULL, &info),
+-    BT_GATT_CHARACTERISTIC(BT_UUID_HIDS_REPORT_MAP, BT_GATT_CHRC_READ, BT_GATT_PERM_READ_ENCRYPT,
+-                           read_hids_report_map, NULL, NULL),
+-
+-    BT_GATT_CHARACTERISTIC(BT_UUID_HIDS_REPORT, BT_GATT_CHRC_READ | BT_GATT_CHRC_NOTIFY,
+-                           BT_GATT_PERM_READ_ENCRYPT, read_hids_input_report, NULL, NULL),
+-    BT_GATT_CCC(input_ccc_changed, BT_GATT_PERM_READ_ENCRYPT | BT_GATT_PERM_WRITE_ENCRYPT),
+-    BT_GATT_DESCRIPTOR(BT_UUID_HIDS_REPORT_REF, BT_GATT_PERM_READ_ENCRYPT, read_hids_report_ref,
+-                       NULL, &input),
+-
+-    BT_GATT_CHARACTERISTIC(BT_UUID_HIDS_REPORT, BT_GATT_CHRC_READ | BT_GATT_CHRC_NOTIFY,
+-                           BT_GATT_PERM_READ_ENCRYPT, read_hids_consumer_input_report, NULL, NULL),
+-    BT_GATT_CCC(input_ccc_changed, BT_GATT_PERM_READ_ENCRYPT | BT_GATT_PERM_WRITE_ENCRYPT),
+-    BT_GATT_DESCRIPTOR(BT_UUID_HIDS_REPORT_REF, BT_GATT_PERM_READ_ENCRYPT, read_hids_report_ref,
+-                       NULL, &consumer_input),
+-
+-#if IS_ENABLED(CONFIG_ZMK_POINTING)
+-    BT_GATT_CHARACTERISTIC(BT_UUID_HIDS_REPORT, BT_GATT_CHRC_READ | BT_GATT_CHRC_NOTIFY,
+-                           BT_GATT_PERM_READ_ENCRYPT, read_hids_mouse_input_report, NULL, NULL),
+-    BT_GATT_CCC(input_ccc_changed, BT_GATT_PERM_READ_ENCRYPT | BT_GATT_PERM_WRITE_ENCRYPT),
+-    BT_GATT_DESCRIPTOR(BT_UUID_HIDS_REPORT_REF, BT_GATT_PERM_READ_ENCRYPT, read_hids_report_ref,
+-                       NULL, &mouse_input),
+-
+-#if IS_ENABLED(CONFIG_ZMK_POINTING_SMOOTH_SCROLLING)
+-    BT_GATT_CHARACTERISTIC(BT_UUID_HIDS_REPORT,
+-                           BT_GATT_CHRC_READ | BT_GATT_CHRC_WRITE | BT_GATT_CHRC_WRITE_WITHOUT_RESP,
+-                           BT_GATT_PERM_READ_ENCRYPT | BT_GATT_PERM_WRITE_ENCRYPT,
+-                           read_hids_mouse_feature_report, write_hids_mouse_feature_report, NULL),
+-    BT_GATT_DESCRIPTOR(BT_UUID_HIDS_REPORT_REF, BT_GATT_PERM_READ_ENCRYPT, read_hids_report_ref,
+-                       NULL, &mouse_feature),
+-#endif // IS_ENABLED(CONFIG_ZMK_POINTING_SMOOTH_SCROLLING)
+-
+-#endif // IS_ENABLED(CONFIG_ZMK_POINTING)
+-
+-#if IS_ENABLED(CONFIG_ZMK_HID_INDICATORS)
+-    BT_GATT_CHARACTERISTIC(BT_UUID_HIDS_REPORT,
+-                           BT_GATT_CHRC_READ | BT_GATT_CHRC_WRITE | BT_GATT_CHRC_WRITE_WITHOUT_RESP,
+-                           BT_GATT_PERM_READ_ENCRYPT | BT_GATT_PERM_WRITE_ENCRYPT, NULL,
+-                           write_hids_leds_report, NULL),
+-    BT_GATT_DESCRIPTOR(BT_UUID_HIDS_REPORT_REF, BT_GATT_PERM_READ_ENCRYPT, read_hids_report_ref,
+-                       NULL, &led_indicators),
+-#endif // IS_ENABLED(CONFIG_ZMK_HID_INDICATORS)
+-
+-    BT_GATT_CHARACTERISTIC(BT_UUID_HIDS_CTRL_POINT, BT_GATT_CHRC_WRITE_WITHOUT_RESP,
+-                           BT_GATT_PERM_WRITE, NULL, write_ctrl_point, &ctrl_point));
+-
+-K_THREAD_STACK_DEFINE(hog_q_stack, CONFIG_ZMK_BLE_THREAD_STACK_SIZE);
+-
+-struct k_work_q hog_work_q;
+-
+-K_MSGQ_DEFINE(zmk_hog_keyboard_msgq, sizeof(struct zmk_hid_keyboard_report_body),
+-              CONFIG_ZMK_BLE_KEYBOARD_REPORT_QUEUE_SIZE, 4);
+-
+-void send_keyboard_report_callback(struct k_work *work) {
+-    struct zmk_hid_keyboard_report_body report;
+-
+-    while (k_msgq_get(&zmk_hog_keyboard_msgq, &report, K_NO_WAIT) == 0) {
+-        struct bt_conn *conn = zmk_ble_active_profile_conn();
+-        if (conn == NULL) {
+-            return;
+-        }
+-
+-        struct bt_gatt_notify_params notify_params = {
+-            .attr = &hog_svc.attrs[5],
+-            .data = &report,
+-            .len = sizeof(report),
+-        };
+-
+-        int err = bt_gatt_notify_cb(conn, &notify_params);
+-        if (err == -EPERM) {
+-            bt_conn_set_security(conn, BT_SECURITY_L2);
+-        } else if (err) {
+-            LOG_DBG("Error notifying %d", err);
+-        }
+-
+-        bt_conn_unref(conn);
+-    }
+-}
+-
+-K_WORK_DEFINE(hog_keyboard_work, send_keyboard_report_callback);
+-
+-int zmk_hog_send_keyboard_report(struct zmk_hid_keyboard_report_body *report) {
+-    int err = k_msgq_put(&zmk_hog_keyboard_msgq, report, K_MSEC(100));
+-    if (err) {
+-        switch (err) {
+-        case -EAGAIN: {
+-            LOG_WRN("Keyboard message queue full, popping first message and queueing again");
+-            struct zmk_hid_keyboard_report_body discarded_report;
+-            k_msgq_get(&zmk_hog_keyboard_msgq, &discarded_report, K_NO_WAIT);
+-            return zmk_hog_send_keyboard_report(report);
+-        }
+-        default:
+-            LOG_WRN("Failed to queue keyboard report to send (%d)", err);
+-            return err;
+-        }
+-    }
+-
+-    k_work_submit_to_queue(&hog_work_q, &hog_keyboard_work);
+-
+-    return 0;
+-};
+-
+-K_MSGQ_DEFINE(zmk_hog_consumer_msgq, sizeof(struct zmk_hid_consumer_report_body),
+-              CONFIG_ZMK_BLE_CONSUMER_REPORT_QUEUE_SIZE, 4);
+-
+-void send_consumer_report_callback(struct k_work *work) {
+-    struct zmk_hid_consumer_report_body report;
+-
+-    while (k_msgq_get(&zmk_hog_consumer_msgq, &report, K_NO_WAIT) == 0) {
+-        struct bt_conn *conn = zmk_ble_active_profile_conn();
+-        if (conn == NULL) {
+-            return;
+-        }
+-
+-        struct bt_gatt_notify_params notify_params = {
+-            .attr = &hog_svc.attrs[9],
+-            .data = &report,
+-            .len = sizeof(report),
+-        };
+-
+-        int err = bt_gatt_notify_cb(conn, &notify_params);
+-        if (err == -EPERM) {
+-            bt_conn_set_security(conn, BT_SECURITY_L2);
+-        } else if (err) {
+-            LOG_DBG("Error notifying %d", err);
+-        }
+-
+-        bt_conn_unref(conn);
+-    }
+-};
+-
+-K_WORK_DEFINE(hog_consumer_work, send_consumer_report_callback);
+-
+-int zmk_hog_send_consumer_report(struct zmk_hid_consumer_report_body *report) {
+-    int err = k_msgq_put(&zmk_hog_consumer_msgq, report, K_MSEC(100));
+-    if (err) {
+-        switch (err) {
+-        case -EAGAIN: {
+-            LOG_WRN("Consumer message queue full, popping first message and queueing again");
+-            struct zmk_hid_consumer_report_body discarded_report;
+-            k_msgq_get(&zmk_hog_consumer_msgq, &discarded_report, K_NO_WAIT);
+-            return zmk_hog_send_consumer_report(report);
+-        }
+-        default:
+-            LOG_WRN("Failed to queue consumer report to send (%d)", err);
+-            return err;
+-        }
+-    }
+-
+-    k_work_submit_to_queue(&hog_work_q, &hog_consumer_work);
+-
+-    return 0;
+-};
+-
+-#if IS_ENABLED(CONFIG_ZMK_POINTING)
+-
+-K_MSGQ_DEFINE(zmk_hog_mouse_msgq, sizeof(struct zmk_hid_mouse_report_body),
+-              CONFIG_ZMK_BLE_MOUSE_REPORT_QUEUE_SIZE, 4);
+-
+-void send_mouse_report_callback(struct k_work *work) {
+-    struct zmk_hid_mouse_report_body report;
+-    while (k_msgq_get(&zmk_hog_mouse_msgq, &report, K_NO_WAIT) == 0) {
+-        struct bt_conn *conn = zmk_ble_active_profile_conn();
+-        if (conn == NULL) {
+-            return;
+-        }
+-
+-        struct bt_gatt_notify_params notify_params = {
+-            .attr = &hog_svc.attrs[13],
+-            .data = &report,
+-            .len = sizeof(report),
+-        };
+-
+-        int err = bt_gatt_notify_cb(conn, &notify_params);
+-        if (err == -EPERM) {
+-            bt_conn_set_security(conn, BT_SECURITY_L2);
+-        } else if (err) {
+-            LOG_DBG("Error notifying %d", err);
+-        }
+-
+-        bt_conn_unref(conn);
+-    }
+-};
+-
+-K_WORK_DEFINE(hog_mouse_work, send_mouse_report_callback);
+-
+-int zmk_hog_send_mouse_report(struct zmk_hid_mouse_report_body *report) {
+-    int err = k_msgq_put(&zmk_hog_mouse_msgq, report, K_MSEC(100));
+-    if (err) {
+-        switch (err) {
+-        case -EAGAIN: {
+-            LOG_WRN("Consumer message queue full, popping first message and queueing again");
+-            struct zmk_hid_mouse_report_body discarded_report;
+-            k_msgq_get(&zmk_hog_mouse_msgq, &discarded_report, K_NO_WAIT);
+-            return zmk_hog_send_mouse_report(report);
+-        }
+-        default:
+-            LOG_WRN("Failed to queue mouse report to send (%d)", err);
+-            return err;
+-        }
+-    }
+-
+-    k_work_submit_to_queue(&hog_work_q, &hog_mouse_work);
+-
+-    return 0;
+-};
+-#endif // IS_ENABLED(CONFIG_ZMK_POINTING)
++#if IS_ENABLED(CONFIG_ZMK_HID_LAYER_STATE_REPORT)
++static struct hids_report layer_state_input = {
++    .id = ZMK_HID_REPORT_ID_LAYER_STATE,
++    .type = HIDS_INPUT,
++};
++
++static ssize_t read_hids_layer_state_report(struct bt_conn *conn,
++                                           const struct bt_gatt_attr *attr,
++                                           void *buf, uint16_t len, uint16_t offset) {
++    struct zmk_hid_layer_state_report_body *report = &zmk_hid_get_layer_state_report()->body;
++    return bt_gatt_attr_read(conn, attr, buf, len, offset, report, sizeof(*report));
++}
++
++static void layer_state_ccc_changed(const struct bt_gatt_attr *attr, uint16_t value) {
++    if (value == BT_GATT_CCC_NOTIFY) {
++        zmk_hog_send_layer_state_report(&zmk_hid_get_layer_state_report()->body);
++    }
++}
++#endif
++
++static bool host_requests_notification = false;
++static uint8_t ctrl_point;
++// static uint8_t proto_mode;
++
++static ssize_t read_hids_info(struct bt_conn *conn, const struct bt_gatt_attr *attr, void *buf,
++                              uint16_t len, uint16_t offset) {
++    return bt_gatt_attr_read(conn, attr, buf, len, offset, attr->user_data,
++                             sizeof(struct hids_info));
++}
++
++static ssize_t read_hids_report_ref(struct bt_conn *conn, const struct bt_gatt_attr *attr,
++                                    void *buf, uint16_t len, uint16_t offset) {
++    return bt_gatt_attr_read(conn, attr, buf, len, offset, attr->user_data,
++                             sizeof(struct hids_report));
++}
++
++static ssize_t read_hids_report_map(struct bt_conn *conn, const struct bt_gatt_attr *attr,
++                                    void *buf, uint16_t len, uint16_t offset) {
++    return bt_gatt_attr_read(conn, attr, buf, len, offset, zmk_hid_report_desc,
++                             sizeof(zmk_hid_report_desc));
++}
++
++static ssize_t read_hids_input_report(struct bt_conn *conn, const struct bt_gatt_attr *attr,
++                                      void *buf, uint16_t len, uint16_t offset) {
++    struct zmk_hid_keyboard_report_body *report_body = &zmk_hid_get_keyboard_report()->body;
++    return bt_gatt_attr_read(conn, attr, buf, len, offset, report_body,
++                             sizeof(struct zmk_hid_keyboard_report_body));
++}
++
++#if IS_ENABLED(CONFIG_ZMK_HID_INDICATORS)
++static ssize_t write_hids_leds_report(struct bt_conn *conn, const struct bt_gatt_attr *attr,
++                                      const void *buf, uint16_t len, uint16_t offset,
++                                      uint8_t flags) {
++    if (offset != 0) {
++        return BT_GATT_ERR(BT_ATT_ERR_INVALID_OFFSET);
++    }
++    if (len != sizeof(struct zmk_hid_led_report_body)) {
++        return BT_GATT_ERR(BT_ATT_ERR_INVALID_ATTRIBUTE_LEN);
++    }
++
++    struct zmk_hid_led_report_body *report = (struct zmk_hid_led_report_body *)buf;
++    int profile = zmk_ble_profile_index(bt_conn_get_dst(conn));
++    if (profile < 0) {
++        return BT_GATT_ERR(BT_ATT_ERR_UNLIKELY);
++    }
++
++    struct zmk_endpoint_instance endpoint = {.transport = ZMK_TRANSPORT_BLE,
++                                             .ble = {
++                                                 .profile_index = profile,
++                                             }};
++    zmk_hid_indicators_process_report(report, endpoint);
++
++    return len;
++}
++
++#endif // IS_ENABLED(CONFIG_ZMK_HID_INDICATORS)
++
++static ssize_t read_hids_consumer_input_report(struct bt_conn *conn,
++                                               const struct bt_gatt_attr *attr, void *buf,
++                                               uint16_t len, uint16_t offset) {
++    struct zmk_hid_consumer_report_body *report_body = &zmk_hid_get_consumer_report()->body;
++    return bt_gatt_attr_read(conn, attr, buf, len, offset, report_body,
++                             sizeof(struct zmk_hid_consumer_report_body));
++}
++
++#if IS_ENABLED(CONFIG_ZMK_POINTING)
++
++static ssize_t read_hids_mouse_input_report(struct bt_conn *conn, const struct bt_gatt_attr *attr,
++                                            void *buf, uint16_t len, uint16_t offset) {
++    struct zmk_hid_mouse_report_body *report_body = &zmk_hid_get_mouse_report()->body;
++    return bt_gatt_attr_read(conn, attr, buf, len, offset, report_body,
++                             sizeof(struct zmk_hid_mouse_report_body));
++}
++
++#if IS_ENABLED(CONFIG_ZMK_POINTING_SMOOTH_SCROLLING)
++
++static ssize_t read_hids_mouse_feature_report(struct bt_conn *conn, const struct bt_gatt_attr *attr,
++                                              void *buf, uint16_t len, uint16_t offset) {
++
++    int profile = zmk_ble_profile_index(bt_conn_get_dst(conn));
++    if (profile < 0) {
++        LOG_DBG("   BT_ATT_ERR_UNLIKELY");
++        return BT_GATT_ERR(BT_ATT_ERR_UNLIKELY);
++    }
++
++    struct zmk_endpoint_instance endpoint = {
++        .transport = ZMK_TRANSPORT_BLE,
++        .ble = {.profile_index = profile},
++    };
++
++    struct zmk_pointing_resolution_multipliers mult =
++        zmk_pointing_resolution_multipliers_get_profile(endpoint);
++
++    struct zmk_hid_mouse_resolution_feature_report_body report = {
++        .wheel_res = mult.wheel,
++        .hwheel_res = mult.hor_wheel,
++    };
++
++    return bt_gatt_attr_read(conn, attr, buf, len, offset, &report,
++                             sizeof(struct zmk_hid_mouse_resolution_feature_report_body));
++}
++
++static ssize_t write_hids_mouse_feature_report(struct bt_conn *conn,
++                                               const struct bt_gatt_attr *attr, const void *buf,
++                                               uint16_t len, uint16_t offset, uint8_t flags) {
++    if (offset != 0) {
++        return BT_GATT_ERR(BT_ATT_ERR_INVALID_OFFSET);
++    }
++    if (len != sizeof(struct zmk_hid_mouse_resolution_feature_report_body)) {
++        return BT_GATT_ERR(BT_ATT_ERR_INVALID_ATTRIBUTE_LEN);
++    }
++
++    struct zmk_hid_mouse_resolution_feature_report_body *report =
++        (struct zmk_hid_mouse_resolution_feature_report_body *)buf;
++    int profile = zmk_ble_profile_index(bt_conn_get_dst(conn));
++    if (profile < 0) {
++        return BT_GATT_ERR(BT_ATT_ERR_UNLIKELY);
++    }
++
++    struct zmk_endpoint_instance endpoint = {.transport = ZMK_TRANSPORT_BLE,
++                                             .ble = {
++                                                 .profile_index = profile,
++                                             }};
++    zmk_pointing_resolution_multipliers_process_report(report, endpoint);
++
++    return len;
++}
++
++#endif // IS_ENABLED(CONFIG_ZMK_POINTING_SMOOTH_SCROLLING)
++
++#endif // IS_ENABLED(CONFIG_ZMK_POINTING)
++
++// static ssize_t write_proto_mode(struct bt_conn *conn,
++//                                 const struct bt_gatt_attr *attr,
++//                                 const void *buf, uint16_t len, uint16_t offset,
++//                                 uint8_t flags)
++// {
++//     printk("PROTO CHANGED\n");
++//     return 0;
++// }
++
++static void input_ccc_changed(const struct bt_gatt_attr *attr, uint16_t value) {
++    host_requests_notification = (value == BT_GATT_CCC_NOTIFY) ? 1 : 0;
++}
++
++static ssize_t write_ctrl_point(struct bt_conn *conn, const struct bt_gatt_attr *attr,
++                                const void *buf, uint16_t len, uint16_t offset, uint8_t flags) {
++    uint8_t *value = attr->user_data;
++
++    if (offset + len > sizeof(ctrl_point)) {
++        return BT_GATT_ERR(BT_ATT_ERR_INVALID_OFFSET);
++    }
++
++    memcpy(value + offset, buf, len);
++
++    return len;
++}
++
++/* HID Service Declaration */
++BT_GATT_SERVICE_DEFINE(
++    hog_svc, BT_GATT_PRIMARY_SERVICE(BT_UUID_HIDS),
++    //    BT_GATT_CHARACTERISTIC(BT_UUID_HIDS_PROTOCOL_MODE, BT_GATT_CHRC_WRITE_WITHOUT_RESP,
++    //                           BT_GATT_PERM_WRITE, NULL, write_proto_mode, &proto_mode),
++    BT_GATT_CHARACTERISTIC(BT_UUID_HIDS_INFO, BT_GATT_CHRC_READ, BT_GATT_PERM_READ, read_hids_info,
++                           NULL, &info),
++    BT_GATT_CHARACTERISTIC(BT_UUID_HIDS_REPORT_MAP, BT_GATT_CHRC_READ, BT_GATT_PERM_READ_ENCRYPT,
++                           read_hids_report_map, NULL, NULL),
++
++    BT_GATT_CHARACTERISTIC(BT_UUID_HIDS_REPORT, BT_GATT_CHRC_READ | BT_GATT_CHRC_NOTIFY,
++                           BT_GATT_PERM_READ_ENCRYPT, read_hids_input_report, NULL, NULL),
++    BT_GATT_CCC(input_ccc_changed, BT_GATT_PERM_READ_ENCRYPT | BT_GATT_PERM_WRITE_ENCRYPT),
++    BT_GATT_DESCRIPTOR(BT_UUID_HIDS_REPORT_REF, BT_GATT_PERM_READ_ENCRYPT, read_hids_report_ref,
++                       NULL, &input),
++
++    BT_GATT_CHARACTERISTIC(BT_UUID_HIDS_REPORT, BT_GATT_CHRC_READ | BT_GATT_CHRC_NOTIFY,
++                           BT_GATT_PERM_READ_ENCRYPT, read_hids_consumer_input_report, NULL, NULL),
++    BT_GATT_CCC(input_ccc_changed, BT_GATT_PERM_READ_ENCRYPT | BT_GATT_PERM_WRITE_ENCRYPT),
++    BT_GATT_DESCRIPTOR(BT_UUID_HIDS_REPORT_REF, BT_GATT_PERM_READ_ENCRYPT, read_hids_report_ref,
++                       NULL, &consumer_input),
++
++#if IS_ENABLED(CONFIG_ZMK_POINTING)
++    BT_GATT_CHARACTERISTIC(BT_UUID_HIDS_REPORT, BT_GATT_CHRC_READ | BT_GATT_CHRC_NOTIFY,
++                           BT_GATT_PERM_READ_ENCRYPT, read_hids_mouse_input_report, NULL, NULL),
++    BT_GATT_CCC(input_ccc_changed, BT_GATT_PERM_READ_ENCRYPT | BT_GATT_PERM_WRITE_ENCRYPT),
++    BT_GATT_DESCRIPTOR(BT_UUID_HIDS_REPORT_REF, BT_GATT_PERM_READ_ENCRYPT, read_hids_report_ref,
++                       NULL, &mouse_input),
++
++#if IS_ENABLED(CONFIG_ZMK_POINTING_SMOOTH_SCROLLING)
++    BT_GATT_CHARACTERISTIC(BT_UUID_HIDS_REPORT,
++                           BT_GATT_CHRC_READ | BT_GATT_CHRC_WRITE | BT_GATT_CHRC_WRITE_WITHOUT_RESP,
++                           BT_GATT_PERM_READ_ENCRYPT | BT_GATT_PERM_WRITE_ENCRYPT,
++                           read_hids_mouse_feature_report, write_hids_mouse_feature_report, NULL),
++    BT_GATT_DESCRIPTOR(BT_UUID_HIDS_REPORT_REF, BT_GATT_PERM_READ_ENCRYPT, read_hids_report_ref,
++                       NULL, &mouse_feature),
++#endif // IS_ENABLED(CONFIG_ZMK_POINTING_SMOOTH_SCROLLING)
++
++#endif // IS_ENABLED(CONFIG_ZMK_POINTING)
++
++#if IS_ENABLED(CONFIG_ZMK_HID_INDICATORS)
++    BT_GATT_CHARACTERISTIC(BT_UUID_HIDS_REPORT,
++                           BT_GATT_CHRC_READ | BT_GATT_CHRC_WRITE | BT_GATT_CHRC_WRITE_WITHOUT_RESP,
++                           BT_GATT_PERM_READ_ENCRYPT | BT_GATT_PERM_WRITE_ENCRYPT, NULL,
++                           write_hids_leds_report, NULL),
++    BT_GATT_DESCRIPTOR(BT_UUID_HIDS_REPORT_REF, BT_GATT_PERM_READ_ENCRYPT, read_hids_report_ref,
++                       NULL, &led_indicators),
++#endif // IS_ENABLED(CONFIG_ZMK_HID_INDICATORS)
++
++#if IS_ENABLED(CONFIG_ZMK_HID_LAYER_STATE_REPORT)
++BT_GATT_CHARACTERISTIC(BT_UUID_HIDS_REPORT, BT_GATT_CHRC_READ | BT_GATT_CHRC_NOTIFY,
++                           BT_GATT_PERM_READ_ENCRYPT, read_hids_layer_state_report, NULL, NULL),
++    BT_GATT_CCC(layer_state_ccc_changed, BT_GATT_PERM_READ_ENCRYPT | BT_GATT_PERM_WRITE_ENCRYPT),
++    BT_GATT_DESCRIPTOR(BT_UUID_HIDS_REPORT_REF, BT_GATT_PERM_READ_ENCRYPT,
++                       read_hids_report_ref, NULL, &layer_state_input),
++#endif
++
++    BT_GATT_CHARACTERISTIC(BT_UUID_HIDS_CTRL_POINT, BT_GATT_CHRC_WRITE_WITHOUT_RESP,
++                           BT_GATT_PERM_WRITE, NULL, write_ctrl_point, &ctrl_point));
++
++K_THREAD_STACK_DEFINE(hog_q_stack, CONFIG_ZMK_BLE_THREAD_STACK_SIZE);
++
++struct k_work_q hog_work_q;
++
++K_MSGQ_DEFINE(zmk_hog_keyboard_msgq, sizeof(struct zmk_hid_keyboard_report_body),
++              CONFIG_ZMK_BLE_KEYBOARD_REPORT_QUEUE_SIZE, 4);
++
++void send_keyboard_report_callback(struct k_work *work) {
++    struct zmk_hid_keyboard_report_body report;
++
++    while (k_msgq_get(&zmk_hog_keyboard_msgq, &report, K_NO_WAIT) == 0) {
++        struct bt_conn *conn = zmk_ble_active_profile_conn();
++        if (conn == NULL) {
++            return;
++        }
++
++        struct bt_gatt_notify_params notify_params = {
++            .attr = &hog_svc.attrs[5],
++            .data = &report,
++            .len = sizeof(report),
++        };
++
++        int err = bt_gatt_notify_cb(conn, &notify_params);
++        if (err == -EPERM) {
++            bt_conn_set_security(conn, BT_SECURITY_L2);
++        } else if (err) {
++            LOG_DBG("Error notifying %d", err);
++        }
++
++        bt_conn_unref(conn);
++    }
++}
++
++K_WORK_DEFINE(hog_keyboard_work, send_keyboard_report_callback);
++
++int zmk_hog_send_keyboard_report(struct zmk_hid_keyboard_report_body *report) {
++    int err = k_msgq_put(&zmk_hog_keyboard_msgq, report, K_MSEC(100));
++    if (err) {
++        switch (err) {
++        case -EAGAIN: {
++            LOG_WRN("Keyboard message queue full, popping first message and queueing again");
++            struct zmk_hid_keyboard_report_body discarded_report;
++            k_msgq_get(&zmk_hog_keyboard_msgq, &discarded_report, K_NO_WAIT);
++            return zmk_hog_send_keyboard_report(report);
++        }
++        default:
++            LOG_WRN("Failed to queue keyboard report to send (%d)", err);
++            return err;
++        }
++    }
++
++    k_work_submit_to_queue(&hog_work_q, &hog_keyboard_work);
++
++    return 0;
++};
++
++K_MSGQ_DEFINE(zmk_hog_consumer_msgq, sizeof(struct zmk_hid_consumer_report_body),
++              CONFIG_ZMK_BLE_CONSUMER_REPORT_QUEUE_SIZE, 4);
++
++void send_consumer_report_callback(struct k_work *work) {
++    struct zmk_hid_consumer_report_body report;
++
++    while (k_msgq_get(&zmk_hog_consumer_msgq, &report, K_NO_WAIT) == 0) {
++        struct bt_conn *conn = zmk_ble_active_profile_conn();
++        if (conn == NULL) {
++            return;
++        }
++
++        struct bt_gatt_notify_params notify_params = {
++            .attr = &hog_svc.attrs[9],
++            .data = &report,
++            .len = sizeof(report),
++        };
++
++        int err = bt_gatt_notify_cb(conn, &notify_params);
++        if (err == -EPERM) {
++            bt_conn_set_security(conn, BT_SECURITY_L2);
++        } else if (err) {
++            LOG_DBG("Error notifying %d", err);
++        }
++
++        bt_conn_unref(conn);
++    }
++};
++
++K_WORK_DEFINE(hog_consumer_work, send_consumer_report_callback);
++
++int zmk_hog_send_consumer_report(struct zmk_hid_consumer_report_body *report) {
++    int err = k_msgq_put(&zmk_hog_consumer_msgq, report, K_MSEC(100));
++    if (err) {
++        switch (err) {
++        case -EAGAIN: {
++            LOG_WRN("Consumer message queue full, popping first message and queueing again");
++            struct zmk_hid_consumer_report_body discarded_report;
++            k_msgq_get(&zmk_hog_consumer_msgq, &discarded_report, K_NO_WAIT);
++            return zmk_hog_send_consumer_report(report);
++        }
++        default:
++            LOG_WRN("Failed to queue consumer report to send (%d)", err);
++            return err;
++        }
++    }
++
++    k_work_submit_to_queue(&hog_work_q, &hog_consumer_work);
++
++    return 0;
++};
++
++#if IS_ENABLED(CONFIG_ZMK_POINTING)
++
++K_MSGQ_DEFINE(zmk_hog_mouse_msgq, sizeof(struct zmk_hid_mouse_report_body),
++              CONFIG_ZMK_BLE_MOUSE_REPORT_QUEUE_SIZE, 4);
++
++void send_mouse_report_callback(struct k_work *work) {
++    struct zmk_hid_mouse_report_body report;
++    while (k_msgq_get(&zmk_hog_mouse_msgq, &report, K_NO_WAIT) == 0) {
++        struct bt_conn *conn = zmk_ble_active_profile_conn();
++        if (conn == NULL) {
++            return;
++        }
++
++        struct bt_gatt_notify_params notify_params = {
++            .attr = &hog_svc.attrs[13],
++            .data = &report,
++            .len = sizeof(report),
++        };
++
++        int err = bt_gatt_notify_cb(conn, &notify_params);
++        if (err == -EPERM) {
++            bt_conn_set_security(conn, BT_SECURITY_L2);
++        } else if (err) {
++            LOG_DBG("Error notifying %d", err);
++        }
++
++        bt_conn_unref(conn);
++    }
++};
++
++K_WORK_DEFINE(hog_mouse_work, send_mouse_report_callback);
++
++int zmk_hog_send_mouse_report(struct zmk_hid_mouse_report_body *report) {
++    int err = k_msgq_put(&zmk_hog_mouse_msgq, report, K_MSEC(100));
++    if (err) {
++        switch (err) {
++        case -EAGAIN: {
++            LOG_WRN("Consumer message queue full, popping first message and queueing again");
++            struct zmk_hid_mouse_report_body discarded_report;
++            k_msgq_get(&zmk_hog_mouse_msgq, &discarded_report, K_NO_WAIT);
++            return zmk_hog_send_mouse_report(report);
++        }
++        default:
++            LOG_WRN("Failed to queue mouse report to send (%d)", err);
++            return err;
++        }
++    }
++
++    k_work_submit_to_queue(&hog_work_q, &hog_mouse_work);
++
++    return 0;
++};
++#endif // IS_ENABLED(CONFIG_ZMK_POINTING)
++
++#if IS_ENABLED(CONFIG_ZMK_HID_LAYER_STATE_REPORT)
++K_MSGQ_DEFINE(zmk_hog_layer_state_msgq, sizeof(struct zmk_hid_layer_state_report_body), 5, 4);
++
++static void send_layer_state_report_callback(struct k_work *work) {
++    const struct bt_gatt_attr *attr = NULL;
++    for (size_t i = 0; i < hog_svc.attr_count; i++) {
++        if (hog_svc.attrs[i].read == read_hids_layer_state_report) {
++            attr = &hog_svc.attrs[i];
++            break;
++        }
++    }
++    if (!attr) {
++        return;
++    }
++
++    struct zmk_hid_layer_state_report_body report;
++    while (k_msgq_get(&zmk_hog_layer_state_msgq, &report, K_NO_WAIT) == 0) {
++        struct bt_conn *conn = zmk_ble_active_profile_conn();
++        if (!conn) {
++            continue;
++        }
++        struct bt_gatt_notify_params params = {
++            .attr = attr,
++            .data = &report,
++            .len = sizeof(report),
++        };
++        int err = bt_gatt_notify_cb(conn, &params);
++        if (err == -EPERM) {
++            bt_conn_set_security(conn, BT_SECURITY_L2);
++        } else if (err) {
++            LOG_DBG("Error notifying layer state: %d", err);
++        }
++        bt_conn_unref(conn);
++    }
++}
++
++K_WORK_DEFINE(hog_layer_state_work, send_layer_state_report_callback);
++
++int zmk_hog_send_layer_state_report(struct zmk_hid_layer_state_report_body *report) {
++    int err = k_msgq_put(&zmk_hog_layer_state_msgq, report, K_NO_WAIT);
++    if (err) {
++        struct zmk_hid_layer_state_report_body discarded;
++        k_msgq_get(&zmk_hog_layer_state_msgq, &discarded, K_NO_WAIT);
++        err = k_msgq_put(&zmk_hog_layer_state_msgq, report, K_NO_WAIT);
++    }
++    k_work_submit_to_queue(&hog_work_q, &hog_layer_state_work);
++    return err;
++}
++#endif
+ 
+ static int zmk_hog_init(void) {
+     static const struct k_work_queue_config queue_config = {.name = "HID Over GATT Send Work"};
+--- a/src/usb_hid.c
++++ b/src/usb_hid.c
+@@ -100,140 +100,160 @@
+             *len = sizeof(*report);
+             break;
+         }
+-        default:
+-            LOG_ERR("Invalid report ID %d requested", setup->wValue & HID_GET_REPORT_ID_MASK);
+-            return -EINVAL;
+-        }
+-        break;
+-    default:
+-        /*
+-         * 7.2.1 of the HID v1.11 spec is unclear about handling requests for reports that do not
+-         * exist For requested reports that aren't input reports, return -ENOTSUP like the Zephyr
+-         * subsys does
+-         */
+-        LOG_ERR("Unsupported report type %d requested", (setup->wValue & HID_GET_REPORT_TYPE_MASK)
+-                                                            << 8);
+-        return -ENOTSUP;
+-    }
+-
+-    return 0;
+-}
+-
+-static int set_report_cb(const struct device *dev, struct usb_setup_packet *setup, int32_t *len,
+-                         uint8_t **data) {
+-    switch (setup->wValue & HID_GET_REPORT_TYPE_MASK) {
+-    case HID_REPORT_TYPE_FEATURE:
+-        switch (setup->wValue & HID_GET_REPORT_ID_MASK) {
+-#if IS_ENABLED(CONFIG_ZMK_POINTING_SMOOTH_SCROLLING)
+-        case ZMK_HID_REPORT_ID_MOUSE:
+-            if (*len != sizeof(struct zmk_hid_mouse_resolution_feature_report)) {
+-                return -EINVAL;
+-            }
+-
+-            struct zmk_hid_mouse_resolution_feature_report *report =
+-                (struct zmk_hid_mouse_resolution_feature_report *)*data;
+-            struct zmk_endpoint_instance endpoint = {
+-                .transport = ZMK_TRANSPORT_USB,
+-            };
+-
+-            zmk_pointing_resolution_multipliers_process_report(&report->body, endpoint);
+-
+-            break;
+-#endif // IS_ENABLED(CONFIG_ZMK_POINTING_SMOOTH_SCROLLING)
+-        default:
+-            return -ENOTSUP;
+-        }
+-        break;
+-
+-    case HID_REPORT_TYPE_OUTPUT:
+-        switch (setup->wValue & HID_GET_REPORT_ID_MASK) {
+-#if IS_ENABLED(CONFIG_ZMK_HID_INDICATORS)
+-        case ZMK_HID_REPORT_ID_LEDS:
+-            if (*len != sizeof(struct zmk_hid_led_report)) {
+-                LOG_ERR("LED set report is malformed: length=%d", *len);
+-                return -EINVAL;
+-            } else {
+-                struct zmk_hid_led_report *report = (struct zmk_hid_led_report *)*data;
+-                struct zmk_endpoint_instance endpoint = {
+-                    .transport = ZMK_TRANSPORT_USB,
+-                };
+-                zmk_hid_indicators_process_report(&report->body, endpoint);
+-            }
+-            break;
+-#endif // IS_ENABLED(CONFIG_ZMK_HID_INDICATORS)
+-        default:
+-            LOG_ERR("Invalid report ID %d requested", setup->wValue & HID_GET_REPORT_ID_MASK);
+-            return -EINVAL;
+-        }
+-        break;
+-    default:
+-        LOG_ERR("Unsupported report type %d requested",
+-                (setup->wValue & HID_GET_REPORT_TYPE_MASK) >> 8);
+-        return -ENOTSUP;
+-    }
+-
+-    return 0;
+-}
+-
+-static const struct hid_ops ops = {
+-#if IS_ENABLED(CONFIG_ZMK_USB_BOOT)
+-    .protocol_change = set_proto_cb,
+-#endif
+-    .int_in_ready = in_ready_cb,
+-    .get_report = get_report_cb,
+-    .set_report = set_report_cb,
+-};
+-
+-static int zmk_usb_hid_send_report(const uint8_t *report, size_t len) {
+-    switch (zmk_usb_get_status()) {
+-    case USB_DC_SUSPEND:
+-        return usb_wakeup_request();
+-    case USB_DC_ERROR:
+-    case USB_DC_RESET:
+-    case USB_DC_DISCONNECTED:
+-    case USB_DC_UNKNOWN:
+-        return -ENODEV;
+-    default:
+-        k_sem_take(&hid_sem, K_MSEC(30));
+-        int err = hid_int_ep_write(hid_dev, report, len, NULL);
+-
+-        if (err) {
+-            k_sem_give(&hid_sem);
+-        }
+-
+-        return err;
+-    }
+-}
+-
+-int zmk_usb_hid_send_keyboard_report(void) {
+-    size_t len;
+-    uint8_t *report = get_keyboard_report(&len);
+-    return zmk_usb_hid_send_report(report, len);
+-}
+-
+-int zmk_usb_hid_send_consumer_report(void) {
+-#if IS_ENABLED(CONFIG_ZMK_USB_BOOT)
+-    if (hid_protocol == HID_PROTOCOL_BOOT) {
+-        return -ENOTSUP;
+-    }
+-#endif /* IS_ENABLED(CONFIG_ZMK_USB_BOOT) */
+-
+-    struct zmk_hid_consumer_report *report = zmk_hid_get_consumer_report();
+-    return zmk_usb_hid_send_report((uint8_t *)report, sizeof(*report));
+-}
+-
+-#if IS_ENABLED(CONFIG_ZMK_POINTING)
+-int zmk_usb_hid_send_mouse_report() {
+-#if IS_ENABLED(CONFIG_ZMK_USB_BOOT)
+-    if (hid_protocol == HID_PROTOCOL_BOOT) {
+-        return -ENOTSUP;
+-    }
+-#endif /* IS_ENABLED(CONFIG_ZMK_USB_BOOT) */
+-
+-    struct zmk_hid_mouse_report *report = zmk_hid_get_mouse_report();
+-    return zmk_usb_hid_send_report((uint8_t *)report, sizeof(*report));
+-}
+-#endif // IS_ENABLED(CONFIG_ZMK_POINTING)
++#if IS_ENABLED(CONFIG_ZMK_HID_LAYER_STATE_REPORT)
++case ZMK_HID_REPORT_ID_LAYER_STATE: {
++            struct zmk_hid_layer_state_report *report = zmk_hid_get_layer_state_report();
++            *data = (uint8_t *)report;
++            *len = sizeof(*report);
++            break;
++        }
++#endif
++        default:
++            LOG_ERR("Invalid report ID %d requested", setup->wValue & HID_GET_REPORT_ID_MASK);
++            return -EINVAL;
++        }
++        break;
++    default:
++        /*
++         * 7.2.1 of the HID v1.11 spec is unclear about handling requests for reports that do not
++         * exist For requested reports that aren't input reports, return -ENOTSUP like the Zephyr
++         * subsys does
++         */
++        LOG_ERR("Unsupported report type %d requested", (setup->wValue & HID_GET_REPORT_TYPE_MASK)
++                                                            << 8);
++        return -ENOTSUP;
++    }
++
++    return 0;
++}
++
++static int set_report_cb(const struct device *dev, struct usb_setup_packet *setup, int32_t *len,
++                         uint8_t **data) {
++    switch (setup->wValue & HID_GET_REPORT_TYPE_MASK) {
++    case HID_REPORT_TYPE_FEATURE:
++        switch (setup->wValue & HID_GET_REPORT_ID_MASK) {
++#if IS_ENABLED(CONFIG_ZMK_POINTING_SMOOTH_SCROLLING)
++        case ZMK_HID_REPORT_ID_MOUSE:
++            if (*len != sizeof(struct zmk_hid_mouse_resolution_feature_report)) {
++                return -EINVAL;
++            }
++
++            struct zmk_hid_mouse_resolution_feature_report *report =
++                (struct zmk_hid_mouse_resolution_feature_report *)*data;
++            struct zmk_endpoint_instance endpoint = {
++                .transport = ZMK_TRANSPORT_USB,
++            };
++
++            zmk_pointing_resolution_multipliers_process_report(&report->body, endpoint);
++
++            break;
++#endif // IS_ENABLED(CONFIG_ZMK_POINTING_SMOOTH_SCROLLING)
++        default:
++            return -ENOTSUP;
++        }
++        break;
++
++    case HID_REPORT_TYPE_OUTPUT:
++        switch (setup->wValue & HID_GET_REPORT_ID_MASK) {
++#if IS_ENABLED(CONFIG_ZMK_HID_INDICATORS)
++        case ZMK_HID_REPORT_ID_LEDS:
++            if (*len != sizeof(struct zmk_hid_led_report)) {
++                LOG_ERR("LED set report is malformed: length=%d", *len);
++                return -EINVAL;
++            } else {
++                struct zmk_hid_led_report *report = (struct zmk_hid_led_report *)*data;
++                struct zmk_endpoint_instance endpoint = {
++                    .transport = ZMK_TRANSPORT_USB,
++                };
++                zmk_hid_indicators_process_report(&report->body, endpoint);
++            }
++            break;
++#endif // IS_ENABLED(CONFIG_ZMK_HID_INDICATORS)
++        default:
++            LOG_ERR("Invalid report ID %d requested", setup->wValue & HID_GET_REPORT_ID_MASK);
++            return -EINVAL;
++        }
++        break;
++    default:
++        LOG_ERR("Unsupported report type %d requested",
++                (setup->wValue & HID_GET_REPORT_TYPE_MASK) >> 8);
++        return -ENOTSUP;
++    }
++
++    return 0;
++}
++
++static const struct hid_ops ops = {
++#if IS_ENABLED(CONFIG_ZMK_USB_BOOT)
++    .protocol_change = set_proto_cb,
++#endif
++    .int_in_ready = in_ready_cb,
++    .get_report = get_report_cb,
++    .set_report = set_report_cb,
++};
++
++static int zmk_usb_hid_send_report(const uint8_t *report, size_t len) {
++    switch (zmk_usb_get_status()) {
++    case USB_DC_SUSPEND:
++        return usb_wakeup_request();
++    case USB_DC_ERROR:
++    case USB_DC_RESET:
++    case USB_DC_DISCONNECTED:
++    case USB_DC_UNKNOWN:
++        return -ENODEV;
++    default:
++        k_sem_take(&hid_sem, K_MSEC(30));
++        int err = hid_int_ep_write(hid_dev, report, len, NULL);
++
++        if (err) {
++            k_sem_give(&hid_sem);
++        }
++
++        return err;
++    }
++}
++
++int zmk_usb_hid_send_keyboard_report(void) {
++    size_t len;
++    uint8_t *report = get_keyboard_report(&len);
++    return zmk_usb_hid_send_report(report, len);
++}
++
++int zmk_usb_hid_send_consumer_report(void) {
++#if IS_ENABLED(CONFIG_ZMK_USB_BOOT)
++    if (hid_protocol == HID_PROTOCOL_BOOT) {
++        return -ENOTSUP;
++    }
++#endif /* IS_ENABLED(CONFIG_ZMK_USB_BOOT) */
++
++    struct zmk_hid_consumer_report *report = zmk_hid_get_consumer_report();
++    return zmk_usb_hid_send_report((uint8_t *)report, sizeof(*report));
++}
++
++#if IS_ENABLED(CONFIG_ZMK_POINTING)
++int zmk_usb_hid_send_mouse_report() {
++#if IS_ENABLED(CONFIG_ZMK_USB_BOOT)
++    if (hid_protocol == HID_PROTOCOL_BOOT) {
++        return -ENOTSUP;
++    }
++#endif /* IS_ENABLED(CONFIG_ZMK_USB_BOOT) */
++
++    struct zmk_hid_mouse_report *report = zmk_hid_get_mouse_report();
++    return zmk_usb_hid_send_report((uint8_t *)report, sizeof(*report));
++}
++#endif // IS_ENABLED(CONFIG_ZMK_POINTING)
++
++#if IS_ENABLED(CONFIG_ZMK_HID_LAYER_STATE_REPORT)
++int zmk_usb_hid_send_layer_state_report(void) {
++#if IS_ENABLED(CONFIG_ZMK_USB_BOOT)
++    if (hid_protocol == HID_PROTOCOL_BOOT) {
++        return -ENOTSUP;
++    }
++#endif
++    struct zmk_hid_layer_state_report *report = zmk_hid_get_layer_state_report();
++    return zmk_usb_hid_send_report((uint8_t *)report, sizeof(*report));
++}
++#endif
+ 
+ static int zmk_usb_hid_init(void) {
+     hid_dev = device_get_binding("HID_0");

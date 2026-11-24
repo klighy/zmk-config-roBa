@@ -1,0 +1,7 @@
+rsource "drivers/pmw3610/Kconfig"
+
+config ZMK_HID_LAYER_STATE_REPORT
+    bool "Layer State HID Report"
+    depends on !ZMK_SPLIT || ZMK_SPLIT_ROLE_CENTRAL
+    help
+      Send the highest active layer and lock state using HID input report 0x04.
