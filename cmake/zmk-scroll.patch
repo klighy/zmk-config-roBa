@@ -47,11 +47,11 @@
 +    // HID feature values 0 and 1 select physical multipliers 1 and 120.
 +    const int32_t multiplier = resolution ? 120 : 1;
 +    // Standard ZMK behaviors still emit 16 units per detent. The roBa
-+    // trackball emits raw counts: 640 counts per detent (10% sensitivity).
++    // trackball emits raw counts: 4800 counts per detent (slower scroll).
 +    int32_t units_per_detent = 16;
 +#if DT_NODE_HAS_STATUS(DT_NODELABEL(trackball), okay)
 +    if (evt->dev == DEVICE_DT_GET(DT_NODELABEL(trackball))) {
-+        units_per_detent = 640;
++        units_per_detent = 4800;
 +    }
 +#endif
 +    // Single fixed-point conversion; preserve signed fractional wheel units.
