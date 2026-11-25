@@ -597,18 +597,7 @@ static enum pixart_input_mode get_input_mode_for_current_layer(const struct devi
     return MOVE;
 }
 
-static void pmw3610_report_scroll(const struct device *dev, uint16_t code, int16_t delta,
-                                  int8_t *remainder) {
-    // Use 640 sensor counts per detent with ZMK's 16 input units per detent.
-    const int32_t counts_per_unit = 40;
-    int32_t counts = delta + *remainder;
-    int32_t scroll = counts / counts_per_unit;
-    *remainder = counts % counts_per_unit;
-    if (scroll != 0) {
-        input_report_rel(dev, code, scroll, true, K_FOREVER);
-    }
-}
-
+// Pass sensor counts intact; the listener converts them directly to HID wheel units.
 static int pmw3610_report_data(const struct device *dev) {
     struct pixart_data *data = dev->data;
     uint8_t buf[PMW3610_BURST_SIZE];
@@ -628,10 +617,6 @@ static int pmw3610_report_data(const struct device *dev) {
         break;
     case SCROLL:
         set_cpi_if_needed(dev, CONFIG_PMW3610_CPI);
-        if (input_mode_changed) {
-            data->scroll_remainder_x = 0;
-            data->scroll_remainder_y = 0;
-        }
         dividor = 1;
         break;
     case SNIPE:
@@ -745,10 +730,10 @@ static int pmw3610_report_data(const struct device *dev) {
             // Check vertical first among axes that exceed the dead zone.
             if (abs(y) > CONFIG_PMW3610_SCROLL_DEADZONE) {
                 int16_t delta = IS_ENABLED(CONFIG_PMW3610_INVERT_SCROLL_Y) ? y : -y;
-                pmw3610_report_scroll(dev, INPUT_REL_WHEEL, delta, &data->scroll_remainder_y);
+                input_report_rel(dev, INPUT_REL_WHEEL, delta, true, K_FOREVER);
             } else if (abs(x) > CONFIG_PMW3610_SCROLL_DEADZONE) {
                 int16_t delta = IS_ENABLED(CONFIG_PMW3610_INVERT_SCROLL_X) ? x : -x;
-                pmw3610_report_scroll(dev, INPUT_REL_HWHEEL, delta, &data->scroll_remainder_x);
+                input_report_rel(dev, INPUT_REL_HWHEEL, delta, true, K_FOREVER);
             }
         } else if (input_mode == BALL_ACTION) {
             data->ball_action_delta_x += x;

@@ -1,44 +1,154 @@
 --- a/src/pointing/input_listener.c
 +++ b/src/pointing/input_listener.c
-@@ -240,26 +240,31 @@
-
+@@ -240,26 +240,40 @@
+ 
  #if IS_ENABLED(CONFIG_ZMK_POINTING_SMOOTH_SCROLLING)
  static void apply_resolution_scaling(struct input_listener_data *data, struct input_event *evt) {
-+    if (evt->type != INPUT_EV_REL) {
-+        return;
-+    }
-+
-     int16_t *remainder;
+-    int16_t *remainder;
 -    uint8_t div;
-+    uint8_t resolution;
-
-     switch (evt->code) {
-     case INPUT_REL_WHEEL:
-         remainder = &data->wheel_remainder;
+-
+-    switch (evt->code) {
+-    case INPUT_REL_WHEEL:
+-        remainder = &data->wheel_remainder;
 -        div = (16 - zmk_pointing_resolution_multipliers_get_current_profile().wheel);
-+        resolution = zmk_pointing_resolution_multipliers_get_current_profile().wheel;
-         break;
-     case INPUT_REL_HWHEEL:
-         remainder = &data->h_wheel_remainder;
+-        break;
+-    case INPUT_REL_HWHEEL:
+-        remainder = &data->h_wheel_remainder;
 -        div = (16 - zmk_pointing_resolution_multipliers_get_current_profile().hor_wheel);
-+        resolution = zmk_pointing_resolution_multipliers_get_current_profile().hor_wheel;
-         break;
-     default:
-         return;
-     }
-
+-        break;
+-    default:
+-        return;
+-    }
+-
 -    int16_t val = evt->value + *remainder;
 -    int16_t scaled = val / (int16_t)div;
 -    *remainder = val - (scaled * (int16_t)div);
 -    evt->value = val;
-+    // The HID descriptor maps logical 0..15 to physical multipliers 1..16.
-+    // Listener inputs are in sixteenths of a detent, independent of the active multiplier.
-+    int64_t units = (int64_t)evt->value * (resolution + 1) + *remainder;
-+    evt->value = units / 16;
-+    *remainder = units % 16;
++    if (evt->type != INPUT_EV_REL) {
++        return;
++    }
++
++    int16_t *remainder;
++    uint8_t resolution;
++
++    switch (evt->code) {
++    case INPUT_REL_WHEEL:
++        remainder = &data->wheel_remainder;
++        resolution = zmk_pointing_resolution_multipliers_get_current_profile().wheel;
++        break;
++    case INPUT_REL_HWHEEL:
++        remainder = &data->h_wheel_remainder;
++        resolution = zmk_pointing_resolution_multipliers_get_current_profile().hor_wheel;
++        break;
++    default:
++        return;
++    }
++
++    // HID feature values 0 and 1 select physical multipliers 1 and 120.
++    const int32_t multiplier = resolution ? 120 : 1;
++    // Standard ZMK behaviors still emit 16 units per detent. The roBa
++    // trackball emits raw counts: 640 counts per detent (10% sensitivity).
++    int32_t units_per_detent = 16;
++#if DT_NODE_HAS_STATUS(DT_NODELABEL(trackball), okay)
++    if (evt->dev == DEVICE_DT_GET(DT_NODELABEL(trackball))) {
++        units_per_detent = 640;
++    }
++#endif
++    // Single fixed-point conversion; preserve signed fractional wheel units.
++    const int64_t units = (int64_t)evt->value * multiplier + *remainder;
++    evt->value = units / units_per_detent;
++    *remainder = units % units_per_detent;
  }
  #endif // IS_ENABLED(CONFIG_ZMK_POINTING_SMOOTH_SCROLLING)
-
+ 
+--- a/include/zmk/hid.h
++++ b/include/zmk/hid.h
+@@ -217,9 +217,9 @@
+ #if IS_ENABLED(CONFIG_ZMK_POINTING_SMOOTH_SCROLLING)
+     HID_USAGE(HID_USAGE_GD_RESOLUTION_MULTIPLIER),
+     HID_LOGICAL_MIN8(0x00),
+-    HID_LOGICAL_MAX8(0x0F),
+-    HID_PHYSICAL_MIN8(0x01),
+-    HID_PHYSICAL_MAX8(0x10),
++    HID_LOGICAL_MAX8(0x01),
++    HID_PHYSICAL_MIN8(0x01),
++    HID_PHYSICAL_MAX8(0x78), // 120 high-resolution units per detent
+     HID_REPORT_SIZE(0x04),
+     HID_REPORT_COUNT(0x01),
+     HID_PUSH,
+--- a/src/pointing/resolution_multipliers.c
++++ b/src/pointing/resolution_multipliers.c
+@@ -16,38 +16,38 @@
+ static struct zmk_pointing_resolution_multipliers multipliers[ZMK_ENDPOINT_COUNT] = {
+     [0 ... ZMK_ENDPOINT_COUNT - 1] =
+         {
+-            .wheel = 15,
+-            .hor_wheel = 15,
+-        },
+-};
+-
+-struct zmk_pointing_resolution_multipliers
+-zmk_pointing_resolution_multipliers_get_current_profile(void) {
+-    return zmk_pointing_resolution_multipliers_get_profile(zmk_endpoints_selected());
+-}
+-
+-struct zmk_pointing_resolution_multipliers
+-zmk_pointing_resolution_multipliers_get_profile(struct zmk_endpoint_instance endpoint) {
+-    const int profile = zmk_endpoint_instance_to_index(endpoint);
+-    return multipliers[profile];
+-}
+-
+-void zmk_pointing_resolution_multipliers_set_profile(struct zmk_pointing_resolution_multipliers m,
+-                                                     struct zmk_endpoint_instance endpoint) {
+-    int profile = zmk_endpoint_instance_to_index(endpoint);
+-
+-    // This write is not happening on the main thread. To prevent potential data races, every
+-    // operation involving hid_indicators must be atomic. Currently, each function either reads
+-    // or writes only one entry at a time, so it is safe to do these operations without a lock.
+-    multipliers[profile] = m;
+-}
+-
+-void zmk_pointing_resolution_multipliers_process_report(
+-    struct zmk_hid_mouse_resolution_feature_report_body *report,
+-    struct zmk_endpoint_instance endpoint) {
+-    struct zmk_pointing_resolution_multipliers vals = {
+-        .wheel = report->wheel_res,
+-        .hor_wheel = report->hwheel_res,
++            .wheel = 1,
++            .hor_wheel = 1,
++        },
++};
++
++struct zmk_pointing_resolution_multipliers
++zmk_pointing_resolution_multipliers_get_current_profile(void) {
++    return zmk_pointing_resolution_multipliers_get_profile(zmk_endpoints_selected());
++}
++
++struct zmk_pointing_resolution_multipliers
++zmk_pointing_resolution_multipliers_get_profile(struct zmk_endpoint_instance endpoint) {
++    const int profile = zmk_endpoint_instance_to_index(endpoint);
++    return multipliers[profile];
++}
++
++void zmk_pointing_resolution_multipliers_set_profile(struct zmk_pointing_resolution_multipliers m,
++                                                     struct zmk_endpoint_instance endpoint) {
++    int profile = zmk_endpoint_instance_to_index(endpoint);
++
++    // This write is not happening on the main thread. To prevent potential data races, every
++    // operation involving hid_indicators must be atomic. Currently, each function either reads
++    // or writes only one entry at a time, so it is safe to do these operations without a lock.
++    multipliers[profile] = m;
++}
++
++void zmk_pointing_resolution_multipliers_process_report(
++    struct zmk_hid_mouse_resolution_feature_report_body *report,
++    struct zmk_endpoint_instance endpoint) {
++    struct zmk_pointing_resolution_multipliers vals = {
++        .wheel = !!report->wheel_res,
++        .hor_wheel = !!report->hwheel_res,
+     };
+     zmk_pointing_resolution_multipliers_set_profile(vals, endpoint);
+ 
 --- a/src/usb_hid.c
 +++ b/src/usb_hid.c
 @@ -77,6 +77,7 @@
