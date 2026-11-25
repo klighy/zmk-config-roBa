@@ -23,8 +23,6 @@ struct pixart_data {
 
     enum pixart_input_mode curr_mode;
     uint32_t curr_cpi;
-    int8_t scroll_remainder_x;
-    int8_t scroll_remainder_y;
     int32_t ball_action_delta_x;
     int32_t ball_action_delta_y;
 
