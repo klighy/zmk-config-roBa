@@ -64,7 +64,7 @@
         };
 
         setting {
-            bindings = <&tog LAYER_SETTING>;
+            bindings = <&tog 8>;
             key-positions = <34 42>;
         };
     };
@@ -73,7 +73,7 @@
         to_layer_0: to_layer_0 {
             compatible = "zmk,behavior-macro-one-param";
             #binding-cells = <1>;
-            bindings = <&to LAYER_WIN &macro_param_1to1 &kp MACRO_PLACEHOLDER>;
+            bindings = <&to 0 &macro_param_1to1 &kp MACRO_PLACEHOLDER>;
             label = "TO_LAYER_0";
         };
     };
@@ -171,7 +171,7 @@
 &kp Q      &kp W         &kp E         &kp R        &kp T                                                 &kp Y        &kp U  &kp I  &kp O  &kp P
 &kp A      &kp S         &kp D         &kp F        &kp G        &none                     &kp EQUAL      &kp H        &kp J  &kp K  &kp L  &kp SINGLE_QUOTE
 &kp Z      &kp X         &kp C         &kp V        &kp B        &kp GRAVE                 &kp MINUS      &kp N        &kp M  &sc    &sp    &kp SLASH
-&kp LCTRL  &kp LEFT_WIN  &kp LEFT_ALT  &lt 3 LANG2  &lt 4 LANG1  &mt LEFT_SHIFT SPACE      &kp BACKSPACE  &lt 2 ENTER                       &kp BACKSLASH
+&kp LCTRL  &kp LEFT_WIN  &kp LEFT_ALT  &lt 3 LANG2  &lt 7 LANG1  &mt LEFT_SHIFT SPACE      &kp BACKSPACE  &lt 2 ENTER                       &kp BACKSLASH
             >;
 
             sensor-bindings = <&encoder_scroll>;
@@ -207,21 +207,11 @@
             >;
         };
 
-        ARROW {
-            display-name = "ARROW";
-            bindings = <
-&kp ESCAPE  &kp LC(LS(TAB))  &kp UP_ARROW    &kp LC(TAB)      &trans                       &trans  &kp LA(LC(LEFT_ARROW))  &kp LC(UP_ARROW)    &kp LC(LA(RIGHT_ARROW))  &trans
-&kp HOME    &kp LEFT_ARROW   &kp DOWN_ARROW  &kp RIGHT_ARROW  &kp END  &trans      &trans  &trans  &kp LC(LEFT_ARROW)      &kp LC(DOWN_ARROW)  &kp LC(RIGHT_ARROW)      &trans
-&trans      &trans           &trans          &trans           &trans   &trans      &trans  &trans  &trans                  &trans              &trans                   &trans
-&trans      &trans           &trans          &trans           &trans   &trans      &trans  &trans                                                                       &trans
-            >;
-        };
-
         MOUSE {
             display-name = "MOUSE";
             bindings = <
 &trans  &trans  &trans  &trans  &trans                      &trans  &trans    &trans    &trans    &trans
-&trans  &trans  &trans  &trans  &trans  &trans      &trans  &trans  &mkp MB1  &mkp MB3  &mkp MB2  &mo LAYER_SCROLL
+&trans  &trans  &trans  &trans  &trans  &trans      &trans  &trans  &mkp MB1  &mkp MB3  &mkp MB2  &mo 5
 &trans  &trans  &trans  &trans  &trans  &trans      &trans  &trans  &mkp MB4  &trans    &mkp MB5  &trans
 &trans  &trans  &trans  &trans  &trans  &trans      &trans  &trans                                &trans
             >;
@@ -237,13 +227,23 @@
             >;
         };
 
+        ARROW {
+            display-name = "ARROW";
+            bindings = <
+&kp ESCAPE  &kp LC(LS(TAB))  &kp UP_ARROW    &kp LC(TAB)      &trans                       &trans  &kp LA(LC(LEFT_ARROW))  &kp LC(UP_ARROW)    &kp LC(LA(RIGHT_ARROW))  &trans
+&kp HOME    &kp LEFT_ARROW   &kp DOWN_ARROW  &kp RIGHT_ARROW  &kp END  &trans      &trans  &trans  &kp LC(LEFT_ARROW)      &kp LC(DOWN_ARROW)  &kp LC(RIGHT_ARROW)      &trans
+&trans      &trans           &trans          &trans           &trans   &trans      &trans  &trans  &trans                  &trans              &trans                   &trans
+&trans      &trans           &trans          &trans           &trans   &trans      &trans  &trans                                                                       &trans
+            >;
+        };
+
         setting {
             display-name = "SETTING";
             bindings = <
-&trans  &trans        &trans        &trans        &trans                           &bt BT_SEL 0    &bt BT_SEL 1  &bt BT_SEL 2  &bt BT_SEL 3  &bt BT_SEL 4
-&trans  &trans        &trans        &trans        &trans  &trans      &trans       &trans          &trans        &trans        &trans        &trans
-&trans  &kp NUMBER_1  &kp NUMBER_2  &kp NUMBER_3  &trans  &trans      &bootloader  &tog LAYER_MAC  &trans        &trans        &bt BT_CLR    &bt BT_CLR_ALL
-&trans  &trans        &trans        &trans        &trans  &trans      &trans       &trans                                                    &trans
+&trans  &trans        &trans        &trans        &trans                           &bt BT_SEL 0  &bt BT_SEL 1  &bt BT_SEL 2  &bt BT_SEL 3  &bt BT_SEL 4
+&trans  &trans        &trans        &trans        &trans  &trans      &trans       &trans        &trans        &trans        &trans        &trans
+&trans  &kp NUMBER_1  &kp NUMBER_2  &kp NUMBER_3  &trans  &trans      &bootloader  &tog 1        &trans        &trans        &bt BT_CLR    &bt BT_CLR_ALL
+&trans  &trans        &trans        &trans        &trans  &trans      &trans       &trans                                                  &trans
             >;
         };
     };
