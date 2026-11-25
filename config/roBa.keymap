@@ -7,9 +7,9 @@
 #define LAYER_MAC     1
 #define LAYER_CAL     2
 #define LAYER_NUM     3
-#define LAYER_ARROW   4
-#define LAYER_MOUSE   5
-#define LAYER_SCROLL  6
+#define LAYER_MOUSE   4
+#define LAYER_SCROLL  5
+#define LAYER_ARROW   6
 #define LAYER_SETTING 7
 
 &mt {
